@@ -1,0 +1,47 @@
+---
+import { normalizeKeyword } from "../config/keywords.js";
+
+export const prerender = false;
+
+/**
+ * / 로 접속했을 때도
+ * /case/키워드와 같은 랜딩 디자인으로 보내기 위한 기본 입구
+ *
+ * / 
+ * → /d토큰?n_query=금융사기상담
+ */
+
+function createToken(value = "") {
+  const source = `${value}|yb-scam|powerlink|2026`;
+
+  let hash1 = 2166136261;
+  for (let i = 0; i < source.length; i++) {
+    hash1 ^= source.charCodeAt(i);
+    hash1 = Math.imul(hash1, 16777619);
+  }
+
+  let hash2 = 5381;
+  for (let i = 0; i < source.length; i++) {
+    hash2 = Math.imul(hash2, 33) ^ source.charCodeAt(i);
+  }
+
+  let hash3 = 0;
+  for (let i = 0; i < source.length; i++) {
+    hash3 = Math.imul(31, hash3) + source.charCodeAt(i);
+  }
+
+  const part1 = (hash1 >>> 0).toString(36);
+  const part2 = (hash2 >>> 0).toString(36);
+  const part3 = (hash3 >>> 0).toString(36);
+
+  return `d${part1}${part2}${part3}904041121959523775231266133458584`;
+}
+
+const keyword = normalizeKeyword("금융사기상담");
+const token = createToken(keyword);
+
+return Astro.redirect(
+  `/${token}?n_query=${encodeURIComponent(keyword)}`,
+  302
+);
+---

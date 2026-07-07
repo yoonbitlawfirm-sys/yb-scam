@@ -1,0 +1,2675 @@
+---
+export const prerender = false;
+
+const rawKeyword =
+  Astro.url.searchParams.get("n_query") ||
+  Astro.url.searchParams.get("keyword") ||
+  "";
+
+const normalizeKeyword = (value = "") =>
+  String(value)
+    .replace(/\+/g, " ")
+    .replace(/[<>]/g, "")
+    .replace(/["'`{}]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 42);
+
+const keyword = normalizeKeyword(rawKeyword);
+const hasKeyword = keyword.length > 0;
+const displayKeyword = hasKeyword ? keyword : "금융사기";
+
+const todayLabel = new Intl.DateTimeFormat("ko-KR", {
+  timeZone: "Asia/Seoul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+})
+  .format(new Date())
+  .replace(/\.\s*/g, ".")
+  .replace(/\.$/, "");
+
+const BRAND = {
+  name: "법무법인 윤빛",
+  logo: "/images/yoonbit-logo-cutout.png",
+  favicon: "/images/favicon/yoonbit-favicon.png",
+  appleTouchIcon: "/images/favicon/yoonbit-apple-touch-icon.png",
+  ogImage: "/images/og/yoonbit-og.png",
+  phone: "010-2290-4252",
+  tel: "tel:01022904252",
+  kakao: "https://open.kakao.com/o/sd4HGIti",
+};
+
+const BUSINESS = {
+  lawFirm: "법무법인 윤빛",
+  responsibleLawyer: "윤수빈 변호사",
+  businessNumber: "754-87-03255",
+  address: "서울특별시 강남구 영동대로 621, 621빌딩",
+};
+
+const footerNotice = [
+  "본 페이지는 특정 정상기업의 명예를 훼손하거나 영업행위를 문제 삼기 위한 목적이 아니며, 정상기업의 명칭·로고·사이트 등을 무단 도용한 사칭 사기 피해 예방 및 대응 안내를 위해 작성되었습니다.",
+  "최근 법무법인 및 변호사를 사칭한 2차 피해 사례가 증가하고 있습니다. 법무법인 윤빛은 유선상으로 비용을 선요구하지 않으며, 전화 상담만으로 구체적인 대응 절차를 전부 공개하지 않습니다.",
+  "이는 사기 조직 관계자가 피해자를 가장해 상담을 요청한 뒤 대응 방식을 사전에 파악하고, 자금 이동·증거 삭제·허위 안내 등으로 선제 조치한 사례가 있었기 때문입니다.",
+  "윤빛은 유선 상담을 통해 피해 정황과 대응 가능성을 우선 검토한 후, 필요하다고 판단되는 경우 내방 상담을 통해 구체적인 절차와 대응 방향을 안내합니다.",
+];
+
+const siteOrigin = Astro.url.origin;
+const pageUrl = Astro.url.href;
+
+const assetUrl = (path = "") => {
+  if (!path) return "";
+  try {
+    return new URL(path, siteOrigin).toString();
+  } catch (_) {
+    return path;
+  }
+};
+
+const faviconUrl = assetUrl(BRAND.favicon);
+const appleTouchIconUrl = assetUrl(BRAND.appleTouchIcon);
+const ogImageUrl = assetUrl(BRAND.ogImage);
+const canonicalUrl = pageUrl;
+
+const flowSteps = [
+  {
+    title: "피해자 입금",
+    text: "피해자가 안내받은 계좌로 피해금을 송금합니다.",
+  },
+  {
+    title: "수취 계좌",
+    text: "피해금이 최초로 모이는 계좌입니다. 안내 계좌가 수시로 바뀌었다면 범죄수익 이동 정황을 의심해야 합니다.",
+  },
+  {
+    title: "분산 계좌",
+    text: "여러 계좌 또는 가상자산 지갑으로 자금이 빠르게 분산됩니다. 이 단계부터 추적 난도는 급격히 높아질 수 있습니다.",
+  },
+  {
+    title: "인출 계좌",
+    text: "인출책, 대포통장, 제3자 계좌를 통해 현금화 직전 단계로 자금이 이동합니다.",
+  },
+  {
+    title: "현금화 / 은닉",
+    text: "현금 인출, 가상자산 전환, 차명 계좌 이동 등을 통해 범죄수익을 은닉하고 사용하려는 단계입니다.",
+  },
+];
+
+const agreements = [
+  {
+    title: "부업 사기",
+    meta: "피해금 980만 원대 · 12시간 내 착수",
+    text: "출금 지연 직후 초기 자료를 확보해 수취 계좌 흐름을 빠르게 확인한 사례",
+    image: "/images/cases/agreement-1.png",
+  },
+  {
+    title: "주식 사기",
+    meta: "피해금 2,800만 원대 · 24시간 내 착수",
+    text: "입금 계좌와 대화내역을 기준으로 지급정지 및 법적 대응을 진행한 사례",
+    image: "/images/cases/agreement-2.png",
+  },
+  {
+    title: "코인 사기",
+    meta: "피해금 3,200만 원대 · 48시간 내 착수",
+    text: "추가 입금 요구 정황을 확보해 피해 구조를 입증한 사례",
+    image: "/images/cases/agreement-3.png",
+  },
+  {
+    title: "로맨스 스캠 사기",
+    meta: "피해금 7,700만 원대 · 3일 내 착수",
+    text: "수취 계좌에서 분산 계좌로 이동한 정황을 확인해 자금 추적 대응을 진행한 사례",
+    image: "/images/cases/agreement-4.png",
+  },
+  {
+    title: "폰지 사기",
+    meta: "피해금 8,400만 원대 · 5일 내 착수",
+    text: "담당자 연락두절 이후 자료를 정리해 계좌 추적 및 보전 조치 가능성을 높인 사례",
+    image: "/images/cases/agreement-5.png",
+  },
+  {
+    title: "로또 사기",
+    meta: "피해금 2억 2,000만 원대 · 7일 내 단체대응",
+    text: "동일 피해자 자료를 취합해 공동 대응으로 진행한 사례",
+    image: "/images/cases/agreement-6.png",
+  },
+];
+
+const agreementLoop = [...agreements, ...agreements];
+
+const mediaReleases = [
+  {
+    press: "로리더",
+    date: "2026.02.10.",
+    title: "법무법인 윤빛, 고도화된 금융사기 대응 체계 전면 강화",
+    excerpt: "금융사기 피해자의 신속한 피해 회복 가능성을 높이기 위해 대응 체계를 강화했다고 밝혔습니다.",
+    url: "https://www.lawleader.co.kr/news/articleView.html?idxno=18508",
+  },
+  {
+    press: "IT비즈뉴스",
+    date: "2026.02.14.",
+    title: "팀미션부업사기 증가에 법무법인 윤빛, 전담대응TF팀 구성",
+    excerpt: "온라인 부업과 고수익 제안을 앞세운 피해 문의가 늘면서 자료 정리와 민·형사 대응을 함께 진행합니다.",
+    url: "https://www.itbiznews.com/news/articleView.html?idxno=204258",
+  },
+  {
+    press: "굿모닝경제",
+    date: "2026.02.12.",
+    title: "법무법인 윤빛, 주식리딩방 사기 대응 TF팀 출범...피해구제 강화",
+    excerpt: "SNS와 단체방 기반 투자사기 피해에 대해 초기 증거 확보와 법적 대응 방향을 중점적으로 안내합니다.",
+    url: "https://www.goodkyung.com/news/articleView.html?idxno=282876",
+  },
+  {
+    press: "국제뉴스",
+    date: "2026.02.13.",
+    title: "구매대행사기·알바사기 급증에 법무법인 윤빛 전담 대응 체계 구축",
+    excerpt: "반복되는 추가 입금 요구와 출금 지연 정황에 대해 피해 자료 보존과 대응 절차가 필요하다고 설명했습니다.",
+    url: "https://www.gukjenews.com/news/articleView.html?idxno=3506131",
+  },
+  {
+    press: "이투뉴스",
+    date: "2026.02.11.",
+    title: "법무법인 윤빛, 보이스피싱·주식리딩방 사기 피해 전담대응팀 운영",
+    excerpt: "초기 대응 시점이 피해 회복 가능성에 영향을 미칠 수 있어 지급정지, 증거 보존, 법적 절차를 신속히 진행합니다.",
+    url: "https://www.e2news.com/news/articleView.html?idxno=327832",
+  },
+];
+
+const yoonbitProcess = [
+  {
+    step: "01",
+    title: "피해 자료 긴급 접수",
+    text: "입금내역, 계좌번호, 거래내역, 대화자료, 사이트 접속 화면을 확보해 사건의 시작점과 피해 구조를 즉시 정리합니다.",
+  },
+  {
+    step: "02",
+    title: "고소장 당일 작성·접수",
+    text: "피해 경위, 입금 과정, 추가 입금 요구, 연락두절 정황을 토대로 수사기관 제출용 고소장과 증거자료를 당일 접수 기준으로 준비합니다.",
+  },
+  {
+    step: "03",
+    title: "지급정지·계좌 동결 요청",
+    text: "피해금이 입금된 수취 계좌와 추가 입금 계좌를 특정해 지급정지, 계좌 동결, 추가 피해 차단 가능성을 신속히 확인합니다.",
+  },
+  {
+    step: "04",
+    title: "자금 이동 경로 분석",
+    text: "수취 계좌에서 분산 계좌, 인출 계좌, 가상자산 전환으로 이어지는 흐름을 분석해 피해금의 이동 방향을 정리합니다.",
+  },
+  {
+    step: "05",
+    title: "가압류·보전조치 진행",
+    text: "계좌 특정 가능성, 잔액 존재 가능성, 상대방 특정 여부를 기준으로 가압류, 채권보전, 부당이득반환 등 회수 절차를 연결합니다.",
+  },
+  {
+    step: "06",
+    title: "피해금 회수 전략 설계",
+    text: "피해 금액, 입금 시점, 자료 확보 상태, 자금 이동 정황을 종합해 원금 회수 가능성을 높이는 순서로 대응 전략을 설계합니다.",
+  },
+];
+
+const legalBases = [
+  {
+    title: "형법 제347조 · 사기죄",
+    text: "기망행위로 재산상 이익을 취득한 경우 적용되는 금융사기 고소의 기본 법적 근거입니다.",
+  },
+  {
+    title: "특정경제범죄 가중처벌법",
+    text: "이득액이 큰 조직적 금융사기 사건에서 가중처벌 여부를 판단하는 핵심 근거입니다.",
+  },
+  {
+    title: "전자금융거래법",
+    text: "대포통장, 접근매체, 계좌 제공, 전자금융 악용 정황이 있을 때 함께 검토되는 법적 근거입니다.",
+  },
+  {
+    title: "정보통신망법",
+    text: "사이트, 앱, 메신저, 오픈채팅방 등을 이용한 유인·기망 정황을 확인할 때 함께 검토되는 근거입니다.",
+  },
+];
+
+const pageTitle = hasKeyword
+  ? `${displayKeyword} 사칭 사기 | ${BRAND.name}`
+  : `${BRAND.name} 긴급 안내 페이지`;
+
+const pageDescription = hasKeyword
+  ? `${displayKeyword} 사칭 사기 관련 출금 지연, 추가 입금 요구, 담당자 연락두절, 사이트 폐쇄 피해가 의심된다면 초기 대응이 중요합니다. 법무법인 윤빛이 피해 정황과 법적 대응 가능성을 안내합니다.`
+  : `${BRAND.name}은 금융사기, 사칭 피해, 출금 지연, 추가 입금 요구, 담당자 연락두절 등 긴급 피해 정황에 대한 초기 상담과 법적 대응 가능성을 안내합니다.`;
+
+const primaryTopic = hasKeyword ? `${displayKeyword} 사칭 사기` : "금융사기 사칭 피해";
+const seoHeadline = hasKeyword ? `${displayKeyword} 사칭 사기 긴급 대응 안내` : `${BRAND.name} 금융사기 긴급 안내`;
+const seoSummary = hasKeyword
+  ? `${displayKeyword} 명칭을 이용한 사칭 사기, 출금 지연, 추가 입금 요구, 계좌 변경, 연락두절 정황에 대한 초기 대응 안내입니다.`
+  : "금융사기와 정상기업 사칭 피해, 출금 지연, 추가 입금 요구, 계좌 변경, 연락두절 정황에 대한 법무법인 윤빛의 초기 대응 안내입니다.";
+
+const seoKeywordVariants = [
+  displayKeyword,
+  `${displayKeyword} 사칭`,
+  `${displayKeyword} 사칭 사기`,
+  `${displayKeyword} 사기`,
+  `${displayKeyword} 사기 피해`,
+  `${displayKeyword} 피해`,
+  `${displayKeyword} 피해 상담`,
+  `${displayKeyword} 출금 지연`,
+  `${displayKeyword} 출금거부`,
+  `${displayKeyword} 출금 정지`,
+  `${displayKeyword} 추가 입금`,
+  `${displayKeyword} 추가 입금 요구`,
+  `${displayKeyword} 계좌 추적`,
+  `${displayKeyword} 대포통장`,
+  `${displayKeyword} 법적 대응`,
+  `${displayKeyword} 고소`,
+  `${displayKeyword} 피해금 회수`,
+];
+
+const metaKeywords = [
+  primaryTopic,
+  ...seoKeywordVariants,
+  "정상기업 사칭",
+  "법무법인 사칭",
+  "변호사 사칭",
+  "2차 사기",
+  "금융사기",
+  "사칭 사기",
+  "출금거부",
+  "대포통장",
+  "피해금 회수",
+  "지급정지",
+  "계좌 동결",
+  "법무법인 윤빛",
+]
+  .map((item) => normalizeKeyword(item))
+  .filter(Boolean)
+  .filter((item, index, arr) => arr.indexOf(item) === index)
+  .join(", ");
+
+const faqItems = [
+  {
+    question: hasKeyword
+      ? `${displayKeyword} 사칭 사기는 어떤 경우 의심해야 하나요?`
+      : "금융사기 또는 사칭 피해는 어떤 경우 의심해야 하나요?",
+    answer: hasKeyword
+      ? `${displayKeyword} 명칭을 사용한 사이트나 담당자가 출금 지연, 추가 입금, 세금·보증금·수수료 납부를 요구하거나 연락이 두절되는 경우 사칭 사기 가능성을 확인해야 합니다.`
+      : "출금 지연, 추가 입금 요구, 담당자 연락두절, 계좌 변경, 사이트 폐쇄 등의 정황이 있다면 금융사기 또는 사칭 피해 가능성을 확인해야 합니다.",
+  },
+  {
+    question: "정상기업과 사칭 사기는 어떻게 구분하나요?",
+    answer:
+      "정상기업 자체가 아니라 제3자가 정상기업의 명칭, 로고, 홈페이지, 담당자명 등을 무단 도용해 피해자를 유인하는 경우가 있습니다. 입금 계좌, 대화 내용, 접속 경로, 출금 지연 사유를 종합적으로 확인해야 합니다.",
+  },
+  {
+    question: "출금이 지연될 때 바로 대응해야 하나요?",
+    answer:
+      "출금 지연과 함께 추가 입금 요구, 세금 납부 요구, 보증금 요구, 담당자 변경이 반복된다면 초기 대응이 중요합니다. 시간이 지날수록 자금 이동과 증거 삭제 가능성이 높아질 수 있습니다.",
+  },
+  {
+    question: "법무법인 윤빛은 유선상으로 비용을 먼저 요구하나요?",
+    answer:
+      "법무법인 윤빛은 유선상으로 비용을 먼저 요구하지 않으며, 전화 상담만으로 구체적인 대응 절차를 전부 공개하지 않습니다. 피해 정황과 대응 가능성을 우선 확인한 뒤 필요 시 내방 상담을 통해 안내합니다.",
+  },
+  {
+    question: "상담 전에 어떤 자료를 준비해야 하나요?",
+    answer:
+      "입금내역, 계좌번호, 거래내역, 담당자와의 대화자료, 사이트 주소, 앱 화면, 출금 지연 안내문, 추가 입금 요구 내역을 준비하면 피해 구조와 대응 가능성 검토에 도움이 됩니다.",
+  },
+];
+
+const hiddenSeoFaqItems = [
+  {
+    question: `${displayKeyword} 사기 피해가 의심될 때 가장 먼저 확인할 부분은 무엇인가요?`,
+    answer: `${displayKeyword} 관련 사이트, 담당자, 입금 계좌, 출금 지연 사유, 추가 입금 요구 내역을 먼저 확인해야 합니다. 특히 정상기업 명칭을 무단 도용한 사칭 구조인지 여부를 구분하는 것이 중요합니다.`,
+  },
+  {
+    question: `${displayKeyword} 사칭 사기에서 출금거부가 발생하면 어떤 의미인가요?`,
+    answer: `${displayKeyword} 사칭 피해에서 출금거부가 반복된다면 단순 전산 오류가 아니라 피해금을 추가로 편취하거나 시간을 끌기 위한 정황일 수 있습니다. 입금내역과 대화자료를 보존해야 합니다.`,
+  },
+  {
+    question: `${displayKeyword} 추가 입금 요구를 받았다면 어떻게 해야 하나요?`,
+    answer: `${displayKeyword} 명목으로 세금, 보증금, 수수료, 인증비, 해제비 등을 요구받았다면 추가 송금 전 피해 가능성을 확인해야 합니다. 추가 입금은 피해 규모를 키울 수 있습니다.`,
+  },
+  {
+    question: `${displayKeyword} 계좌 추적은 언제부터 진행하는 것이 유리한가요?`,
+    answer: `${displayKeyword} 피해금이 수취 계좌에서 분산 계좌, 인출 계좌, 가상자산 지갑 등으로 이동하기 전 초기 자료를 확보할수록 자금 흐름 검토에 유리할 수 있습니다.`,
+  },
+  {
+    question: `${displayKeyword} 대포통장 정황은 어떤 자료로 확인하나요?`,
+    answer: `${displayKeyword} 사칭 피해에서 입금 계좌 명의가 수시로 바뀌거나, 개인 명의 계좌로 입금을 요구하거나, 여러 계좌로 나눠 송금하게 하는 경우 대포통장 사용 가능성을 검토해야 합니다.`,
+  },
+  {
+    question: `${displayKeyword} 사칭 사이트가 폐쇄되면 대응이 어려워지나요?`,
+    answer: `${displayKeyword} 관련 사이트가 폐쇄되기 전 화면 캡처, 주소, 회원정보, 출금 신청 내역, 공지사항, 담당자 대화 내용을 확보해야 합니다. 사이트 폐쇄 후에는 자료 확보가 어려워질 수 있습니다.`,
+  },
+  {
+    question: `${displayKeyword} 담당자가 연락두절되면 바로 고소가 가능한가요?`,
+    answer: `${displayKeyword} 관련 담당자 연락두절만으로 단정할 수는 없지만, 출금 지연, 추가 입금 요구, 계좌 변경, 사이트 폐쇄 정황이 함께 있다면 사기 혐의 검토와 고소 준비가 필요할 수 있습니다.`,
+  },
+  {
+    question: `${displayKeyword} 피해 상담 전에 준비할 핵심 증거는 무엇인가요?`,
+    answer: `${displayKeyword} 피해 상담 전에는 입금내역, 송금 계좌, 거래소 또는 사이트 화면, 담당자 연락처, 카카오톡·텔레그램 대화, 출금 신청 내역, 추가 입금 요구 메시지를 정리하는 것이 좋습니다.`,
+  },
+  {
+    question: `${displayKeyword} 법적 대응은 형사 절차만 진행하나요?`,
+    answer: `${displayKeyword} 사칭 사기는 형사 고소뿐 아니라 지급정지, 계좌 동결, 가압류, 부당이득반환, 민사상 보전 조치 가능성을 함께 검토해야 할 수 있습니다.`,
+  },
+  {
+    question: `${displayKeyword} 피해금 회수 가능성은 무엇에 따라 달라지나요?`,
+    answer: `${displayKeyword} 피해금 회수 가능성은 입금 시점, 계좌 특정 여부, 잔액 존재 가능성, 자금 분산 속도, 증거자료 확보 상태, 수사 진행 상황에 따라 달라질 수 있습니다.`,
+  },
+];
+
+const structuredFaqItems = [...faqItems, ...hiddenSeoFaqItems];
+
+const howToSteps = [
+  {
+    name: "피해 정황 확인",
+    text: `${displayKeyword} 관련 출금 지연, 추가 입금 요구, 연락두절, 사이트 폐쇄 여부를 확인합니다.`,
+  },
+  {
+    name: "증거자료 보존",
+    text: "입금내역, 계좌번호, 대화자료, 사이트 화면, 담당자 정보 등 삭제될 수 있는 자료를 우선 보존합니다.",
+  },
+  {
+    name: "자금 이동 가능성 검토",
+    text: "수취 계좌, 분산 계좌, 인출 계좌, 가상자산 전환 가능성을 기준으로 자금 흐름을 검토합니다.",
+  },
+  {
+    name: "법적 대응 가능성 판단",
+    text: "사기죄, 전자금융거래법, 계좌 동결, 지급정지, 가압류 등 가능한 절차를 사건별로 검토합니다.",
+  },
+  {
+    name: "내방 상담 및 절차 안내",
+    text: "유선 상담 후 대응 가능성이 있다고 판단되는 경우 내방 상담을 통해 구체적인 절차를 안내합니다.",
+  },
+];
+
+const publishedIso = new Date().toISOString();
+const organizationId = `${siteOrigin}/#organization`;
+const legalServiceId = `${siteOrigin}/#legalservice`;
+const websiteId = `${siteOrigin}/#website`;
+const webpageId = `${canonicalUrl}#webpage`;
+const faqId = `${canonicalUrl}#faq`;
+const howToId = `${canonicalUrl}#howto`;
+const breadcrumbId = `${canonicalUrl}#breadcrumb`;
+const articleId = `${canonicalUrl}#article`;
+
+const schemaGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: BRAND.name,
+      legalName: BUSINESS.lawFirm,
+      url: siteOrigin,
+      logo: assetUrl(BRAND.logo),
+      image: ogImageUrl,
+      telephone: BRAND.phone,
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: "KR",
+        addressRegion: "서울특별시",
+        addressLocality: "강남구",
+        streetAddress: BUSINESS.address,
+      },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          telephone: BRAND.phone,
+          availableLanguage: ["ko-KR"],
+          areaServed: "KR",
+        },
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": websiteId,
+      url: siteOrigin,
+      name: BRAND.name,
+      inLanguage: "ko-KR",
+      publisher: {
+        "@id": organizationId,
+      },
+    },
+    {
+      "@type": "LegalService",
+      "@id": legalServiceId,
+      name: BRAND.name,
+      legalName: BUSINESS.lawFirm,
+      url: siteOrigin,
+      image: ogImageUrl,
+      telephone: BRAND.phone,
+      areaServed: "KR",
+      priceRange: "상담 후 안내",
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: "KR",
+        addressRegion: "서울특별시",
+        addressLocality: "강남구",
+        streetAddress: BUSINESS.address,
+      },
+      parentOrganization: {
+        "@id": organizationId,
+      },
+      employee: {
+        "@type": "Person",
+        name: BUSINESS.responsibleLawyer,
+        jobTitle: "광고책임변호사",
+        worksFor: {
+          "@id": organizationId,
+        },
+      },
+      knowsAbout: [
+        "금융사기",
+        "사칭 사기",
+        "출금 지연",
+        "추가 입금 요구",
+        "대포통장",
+        "피해금 회수",
+        primaryTopic,
+      ],
+    },
+    {
+      "@type": "WebPage",
+      "@id": webpageId,
+      url: canonicalUrl,
+      name: pageTitle,
+      headline: seoHeadline,
+      description: pageDescription,
+      inLanguage: "ko-KR",
+      datePublished: publishedIso,
+      dateModified: publishedIso,
+      isPartOf: {
+        "@id": websiteId,
+      },
+      about: {
+        "@id": legalServiceId,
+      },
+      primaryImageOfPage: {
+        "@type": "ImageObject",
+        url: ogImageUrl,
+        width: 1200,
+        height: 630,
+      },
+      breadcrumb: {
+        "@id": breadcrumbId,
+      },
+      mainEntity: [
+        {
+          "@id": faqId,
+        },
+        {
+          "@id": howToId,
+        },
+      ],
+    },
+    {
+      "@type": "Article",
+      "@id": articleId,
+      mainEntityOfPage: {
+        "@id": webpageId,
+      },
+      headline: seoHeadline,
+      description: seoSummary,
+      image: ogImageUrl,
+      author: {
+        "@id": organizationId,
+      },
+      publisher: {
+        "@id": organizationId,
+      },
+      datePublished: publishedIso,
+      dateModified: publishedIso,
+      inLanguage: "ko-KR",
+      articleSection: "금융사기 사칭 피해 긴급 대응",
+      keywords: metaKeywords,
+      about: [
+        primaryTopic,
+        ...seoKeywordVariants,
+        "정상기업 사칭",
+        "법무법인 사칭 2차 피해",
+        "출금 지연",
+        "추가 입금 요구",
+        "대포통장",
+      ],
+      mentions: seoKeywordVariants.map((name) => ({
+        "@type": "Thing",
+        name,
+      })),
+    },
+    {
+      "@type": "FAQPage",
+      "@id": faqId,
+      mainEntity: structuredFaqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    },
+    {
+      "@type": "HowTo",
+      "@id": howToId,
+      name: hasKeyword
+        ? `${displayKeyword} 사칭 사기 초기 대응 절차`
+        : "금융사기 및 사칭 피해 초기 대응 절차",
+      description: `${displayKeyword} 관련 피해 정황 발생 시 증거 보존, 계좌 확인, 법적 대응 가능성 검토, 내방 상담 순서로 대응합니다.`,
+      totalTime: "PT30M",
+      supply: [
+        {
+          "@type": "HowToSupply",
+          name: "입금내역",
+        },
+        {
+          "@type": "HowToSupply",
+          name: "계좌번호 및 거래내역",
+        },
+        {
+          "@type": "HowToSupply",
+          name: "대화자료 및 사이트 화면",
+        },
+      ],
+      step: howToSteps.map((step, index) => ({
+        "@type": "HowToStep",
+        position: index + 1,
+        name: step.name,
+        text: step.text,
+      })),
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": breadcrumbId,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: BRAND.name,
+          item: siteOrigin,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: hasKeyword ? `${displayKeyword} 사칭 사기` : "긴급 안내 페이지",
+          item: canonicalUrl,
+        },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${canonicalUrl}#keyword-list`,
+      name: `${displayKeyword} 관련 피해 검색 주제`,
+      itemListElement: seoKeywordVariants.map((name, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name,
+        url: canonicalUrl,
+      })),
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="keywords" content={metaKeywords} />
+    <meta name="author" content={BRAND.name} />
+    <meta name="publisher" content={BRAND.name} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="format-detection" content="telephone=yes" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="ko-KR" href={canonicalUrl} />
+
+    <link rel="icon" type="image/png" sizes="32x32" href={faviconUrl} />
+    <link rel="icon" type="image/png" sizes="192x192" href={faviconUrl} />
+    <link rel="apple-touch-icon" sizes="180x180" href={appleTouchIconUrl} />
+    <meta name="theme-color" content="#050506" />
+
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content={BRAND.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${BRAND.name} 금융사기 긴급 상담 안내`} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link
+      rel="stylesheet"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+  </head>
+
+  <body>
+    <div class="page-shell">
+      <div class="top-alert">
+        <span class="alert-dot"></span>
+        현재 <strong>{displayKeyword}</strong> 관련 사칭 피해 문의가 증가하여 긴급 안내 페이지가 개설되었습니다.
+      </div>
+
+      <main>
+        <section class="hero section">
+          <div class="hero-bg">
+            <video
+              class="hero-video"
+              src="/videos/gangnam-night.mp4"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              aria-hidden="true"
+            ></video>
+            <div class="hero-video-overlay"></div>
+          </div>
+
+          <div class="hero-copy">
+            <div class="hero-brand-mark" aria-label="법무법인 윤빛 로고">
+              <img src={BRAND.logo} alt="법무법인 윤빛" loading="eager" />
+            </div>
+
+            <p class="pill-eyebrow">{todayLabel} · 현재 접수 가능 · 금융사기 긴급 대응</p>
+
+            <h1>
+              <span>{displayKeyword} 사칭 사기</span>
+              지금 이 순간이<br>
+              골든타임일 수 있습니다
+            </h1>
+
+            <div class="question-list" aria-label="피해 의심 정황">
+              <p>출금이 계속 지연되고 있습니까?</p>
+              <p>세금·수수료·보증금 명목으로<br class="mobile-only" /> 추가 입금을 요구받고 있습니까?</p>
+              <p>담당자와 연락이 끊겼습니까?</p>
+              <p>사이트 또는 앱 접속이 막혔습니까?</p>
+            </div>
+
+            <div class="hero-warning">
+              <strong>위 상황 중 하나라도 해당된다면 단순한 오류가 아닐 수 있습니다.</strong>
+              <span>
+                이는 전형적인 금융사기 피해 패턴 중 하나입니다. 자금이 여러 계좌로 분산·세탁되기 전
+                신속한 법적 대응이 이루어질수록 원금 회수 가능성이 높아집니다.
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section flow-section">
+          <div class="section-head">
+            <p class="eyebrow">범죄수익 이동 정황</p>
+            <h2>피해금은 한 계좌에 오래 머무르지 않습니다</h2>
+            <p>
+              피해금이 입금되는 순간, 사기 조직은 자금을 수취 계좌에서 여러 계좌로 빠르게 분산시킵니다.
+              이후 대포통장, 인출책, 가상자산 전환 등을 거쳐 자금 추적을 어렵게 만들고 현금화·은닉을 시도합니다.
+            </p>
+          </div>
+
+          <div class="flow-alert">
+            초기 48시간 내 대응이 늦어질수록 피해금 회수 가능성은 낮아질 수 있습니다.
+          </div>
+
+          <div class="vertical-flow" aria-label="범죄수익 이동 흐름">
+            {flowSteps.map((item, index) => (
+              <Fragment>
+                <article class="flow-card">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </article>
+                {index < flowSteps.length - 1 && <div class="down-arrow">↓</div>}
+              </Fragment>
+            ))}
+          </div>
+        </section>
+
+        <section class="section case-section">
+          <div class="section-head">
+            <p class="eyebrow">성공 사례 · 골든타임</p>
+            <h2>같은 피해라도, 대응 시점에 따라 결과는 달라질 수 있습니다.</h2>
+            <p>
+              피해금이 여러 계좌로 분산되기 전 입금 계좌, 거래내역, 대화자료를 확보하고
+              초기 법적 대응에 들어간 사례일수록 자금 흐름을 추적하고 차단하는 데 유리한 대응 구조를 만들 수 있습니다.
+            </p>
+          </div>
+
+          <div class="golden-time-panel">
+            <strong>핵심은 골든타임 내 정확한 대응입니다.</strong>
+          </div>
+
+          <div class="case-marquee-shell" aria-label="초기 대응 사례 자동 롤링">
+            <div class="case-marquee-track">
+              {agreementLoop.map((item, index) => (
+                <article class="case-card" aria-hidden={index >= agreements.length}>
+                  <div class="case-image">
+                    <img src={item.image} alt={`${item.title} 이미지`} loading="lazy" />
+                    <span class="image-fallback">합의서 이미지</span>
+                  </div>
+                  <div class="case-body">
+                    <strong>{item.title}</strong>
+                    <span>{item.meta}</span>
+                    <p>{item.text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div class="media-block">
+            <div class="section-head compact">
+              <p class="eyebrow">언론 보도로 확인된 윤빛의 금융사기 대응 체계</p>
+              <h2>피해금 회복의 차이는 초기 대응 구조에서 갈립니다.</h2>
+              <p>
+                법무법인 윤빛은 반복되는 금융사기 사건에서 입금 계좌와 자금 흐름을 빠르게 분석해
+                다수의 피해금 회복 사례를 만들어왔습니다.
+              </p>
+            </div>
+
+            <div class="media-news-panel" aria-label="언론 송출 기사 목록">
+              {mediaReleases.map((item) => (
+                <a class="media-news-item" href={item.url} target="_blank" rel="noopener noreferrer">
+                  <div class="media-news-copy">
+                    <div class="media-news-meta">
+                      <span class="press-dot"></span>
+                      <strong>{item.press}</strong>
+                      <span>·</span>
+                      <time>{item.date}</time>
+                    </div>
+                    <h3>{item.title}</h3>
+                    <p>{item.excerpt}</p>
+                  </div>
+                  <span class="media-open-label">기사 보기 <span aria-hidden="true">↗</span></span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section procedure-section">
+          <div class="section-head">
+            <p class="eyebrow">윤빛 절차 · 자금 추적 노하우</p>
+            <h2>
+              <span>{displayKeyword} 사칭 사기</span>
+              형식적인 절차에 그치지 않고, 자금 이동 가능성까지 함께 봅니다
+            </h2>
+            <p>
+              법무법인 윤빛은 단순히 피해 사실만 정리하지 않습니다.
+              운영 패턴과 자금 이동 구조를 종합해 대응 우선순위를 함께 정리합니다.
+            </p>
+          </div>
+
+          <div class="procedure-grid">
+            {yoonbitProcess.map((item) => (
+              <article class="procedure-card">
+                <span>{item.step}</span>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section class="section legal-section">
+          <div class="legal-panel">
+            <div class="section-head compact">
+              <p class="eyebrow">법적 근거 · 가능한 조치</p>
+              <h2>{displayKeyword} 사칭 사기는 형사 고소와 피해금 회복 절차가 함께 움직입니다.</h2>
+            </div>
+
+            <div class="legal-basis-grid">
+              {legalBases.map((base) => (
+                <article class="legal-basis-card">
+                  <h3>{base.title}</h3>
+                  <p>{base.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section consult-section" id="consult">
+          <div class="section-head">
+            <p class="eyebrow">24시 연중무휴 무료 상담 접수</p>
+            <h2>
+              <span>{displayKeyword} 사칭 사기,</span>
+              지금 접수하지 않으면 대응 시점이 늦어질 수 있습니다.
+            </h2>
+            <p>상담 신청을 남겨주시면 전담팀이 접수 내용을 확인한 뒤 10분 이내 연락드립니다.</p>
+          </div>
+
+          <form class="consult-form" id="consultForm" data-keyword={displayKeyword} data-page-url={canonicalUrl}>
+            <input class="hp-field" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <label>
+              이름
+              <input type="text" name="name" placeholder="성함을 입력해주세요" required />
+            </label>
+
+            <label>
+              연락처
+              <input type="tel" name="phone" placeholder="10분 내 연락 가능한 번호" required />
+            </label>
+
+            <label>
+              피해 업체명
+              <input type="text" name="company" placeholder={`${displayKeyword} 사칭 사기 업체명 또는 사이트명`} />
+            </label>
+
+            <label>
+              입금 금액
+              <input type="text" name="amount" placeholder="예: 3,000만 원" />
+            </label>
+
+            <button type="submit">24시 긴급 상담 신청하기</button>
+
+            <p class="form-notice">
+              24시간 연중무휴 접수 가능하며, 접수 후 순차적으로 연락드립니다.<br />
+              구체적인 진행 가능 여부는 사건 자료 확인 후 안내됩니다.
+            </p>
+
+            <p class="form-status" id="consultFormStatus" aria-live="polite"></p>
+          </form>
+        </section>
+      </main>
+
+      <footer class="compliance-footer" aria-label="법무법인 윤빛 고지 및 사업자 정보">
+        <div class="footer-inner">
+          <section class="footer-notice-panel" aria-label="사칭 피해 및 상담 절차 고지">
+            <p class="footer-kicker">사칭 피해 예방 및 상담 절차 고지</p>
+            <div class="footer-notice-copy">
+              {footerNotice.map((notice) => (
+                <p>{notice}</p>
+              ))}
+            </div>
+          </section>
+
+          <section class="business-panel" aria-label="법무법인 윤빛 사업자 정보">
+            <dl class="business-list">
+              <div>
+                <dt>상호</dt>
+                <dd>{BUSINESS.lawFirm}</dd>
+              </div>
+              <div>
+                <dt>광고책임변호사</dt>
+                <dd>{BUSINESS.responsibleLawyer}</dd>
+              </div>
+              <div>
+                <dt>사업자등록번호</dt>
+                <dd>{BUSINESS.businessNumber}</dd>
+              </div>
+              <div>
+                <dt>주소</dt>
+                <dd>{BUSINESS.address}</dd>
+              </div>
+            </dl>
+
+            <nav class="policy-links" aria-label="정책 안내">
+              <a href="/privacy">개인정보처리방침</a>
+              <a href="/terms">이용약관</a>
+              <a href="/disclaimer">면책고지</a>
+            </nav>
+          </section>
+        </div>
+      </footer>
+
+      <div class="bottom-cta" aria-label="하단 긴급 상담">
+        <div>
+          <strong>{displayKeyword} 사칭 사기 긴급 접수</strong>
+          <span>24시 무료 상담 ☎️ {BRAND.phone}</span>
+        </div>
+        <nav>
+          <a href={BRAND.tel}>전화 상담</a>
+          <a href={BRAND.kakao} target="_blank" rel="noopener noreferrer">카카오 상담</a>
+          <a href="#consult">상담 신청</a>
+        </nav>
+      </div>
+    </div>
+
+    <style>
+      :root {
+        --bg: #050506;
+        --card: rgba(19, 19, 23, 0.72);
+        --line: rgba(255, 255, 255, 0.105);
+        --line-red: rgba(170, 34, 44, 0.34);
+        --red: #8f121b;
+        --red2: #b9222c;
+        --gold: #cfa86c;
+        --gold-soft: #e7c895;
+        --text: #f5f0eb;
+        --muted: #bbb0aa;
+        --dim: #817872;
+        --max: 1160px;
+        --radius-xl: 32px;
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        --shadow: 0 24px 78px rgba(0, 0, 0, 0.38);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 50% -10%, rgba(143, 18, 27, 0.21), transparent 34%),
+          radial-gradient(circle at 12% 20%, rgba(207, 168, 108, 0.055), transparent 30%),
+          radial-gradient(circle at 88% 16%, rgba(143, 18, 27, 0.08), transparent 32%),
+          linear-gradient(135deg, #020202 0%, #07080b 44%, #110607 100%);
+        font-family:
+          "Pretendard",
+          "Apple SD Gothic Neo",
+          "Noto Sans KR",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        line-height: 1.68;
+        word-break: keep-all;
+        overflow-x: hidden;
+        text-align: center;
+        letter-spacing: -0.032em;
+        font-weight: 400;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.013) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.013) 1px, transparent 1px);
+        background-size: 52px 52px;
+        mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.66), transparent 82%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      .page-shell {
+        min-height: 100vh;
+        padding-top: 42px;
+        padding-bottom: 104px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .top-alert {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        z-index: 90;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        color: #fff2ef;
+        font-size: 13px;
+        font-weight: 430;
+        background: linear-gradient(90deg, rgba(72, 8, 14, 0.88), rgba(22, 8, 12, 0.9));
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+        backdrop-filter: blur(18px);
+      }
+
+      .top-alert strong {
+        color: #fff;
+        font-weight: 650;
+      }
+
+      .alert-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #ec4450;
+        box-shadow: 0 0 16px rgba(236, 68, 80, 0.74);
+        flex: 0 0 auto;
+      }
+
+      .section {
+        width: min(var(--max), calc(100% - 36px));
+        margin: 0 auto;
+        padding: 86px 0;
+        position: relative;
+      }
+
+      .section + .section {
+        border-top: 1px solid rgba(255, 255, 255, 0.045);
+      }
+
+      .hero {
+        min-height: 690px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 48px;
+        padding-bottom: 78px;
+        border-top: 0;
+      }
+
+      .hero-bg {
+        position: absolute;
+        inset: 0 50%;
+        width: 100vw;
+        transform: translateX(-50%);
+        z-index: -1;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 50% 22%, rgba(143, 18, 27, 0.18), transparent 38%),
+          linear-gradient(135deg, #040405, #160607);
+      }
+
+      .hero-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.76) contrast(1.08) saturate(1.05);
+        opacity: 1;
+        transform: scale(1.02);
+      }
+
+      .hero-video-overlay {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(180deg, rgba(5, 5, 6, 0.34), rgba(5, 5, 6, 0.22) 42%, rgba(5, 5, 6, 0.58)),
+          linear-gradient(90deg, rgba(5, 5, 6, 0.48), rgba(5, 5, 6, 0.13) 50%, rgba(5, 5, 6, 0.48)),
+          radial-gradient(circle at 50% 18%, rgba(143, 18, 27, 0.1), transparent 38%);
+      }
+
+      .hero-copy {
+        width: 100%;
+        max-width: 940px;
+        margin: 0 auto;
+      }
+
+      .hero-brand-mark {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .hero-brand-mark img {
+        width: auto;
+        max-width: min(460px, 72vw);
+        height: clamp(88px, 11vw, 136px);
+        object-fit: contain;
+        filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.42));
+      }
+
+      .eyebrow,
+      .pill-eyebrow {
+        margin: 0 0 16px;
+        color: var(--gold);
+        font-size: 13px;
+        font-weight: 560;
+        letter-spacing: -0.006em;
+      }
+
+      .pill-eyebrow {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 15px;
+        border-radius: 999px;
+        background: rgba(143, 18, 27, 0.21);
+        border: 1px solid rgba(207, 168, 108, 0.23);
+        box-shadow: 0 12px 34px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
+        margin-bottom: 28px;
+        color: #fff;
+        font-size: clamp(34px, 4.75vw, 58px);
+        line-height: 1.2;
+        letter-spacing: -0.061em;
+        font-weight: 680;
+        text-shadow: 0 12px 38px rgba(0, 0, 0, 0.58);
+      }
+
+      h1 span {
+        display: block;
+        margin-bottom: 13px;
+        color: var(--gold-soft);
+        font-size: clamp(22px, 2.75vw, 32px);
+        line-height: 1.24;
+        font-weight: 570;
+        letter-spacing: -0.044em;
+      }
+
+      .question-list {
+        display: grid;
+        gap: 11px;
+        max-width: 760px;
+        margin: 0 auto 26px;
+      }
+
+      .question-list p {
+        margin: 0;
+        padding: 15px 20px;
+        border-radius: 20px;
+        color: #fff;
+        font-size: clamp(16px, 1.55vw, 19px);
+        font-weight: 560;
+        background:
+          linear-gradient(145deg, rgba(143, 18, 27, 0.23), rgba(255, 255, 255, 0.038)),
+          rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        box-shadow: 0 16px 46px rgba(0, 0, 0, 0.21);
+        backdrop-filter: blur(14px);
+      }
+
+      .hero-warning,
+      .flow-alert,
+      .golden-time-panel,
+      .legal-panel,
+      .consult-form,
+      .flow-card,
+      .case-card,
+      .procedure-card,
+      .legal-basis-card,
+      .media-news-panel {
+        backdrop-filter: blur(16px);
+      }
+
+      .hero-warning {
+        max-width: 820px;
+        margin: 30px auto 0;
+        padding: 25px 27px;
+        border-radius: 26px;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(207, 168, 108, 0.08), transparent 42%),
+          linear-gradient(135deg, rgba(143, 18, 27, 0.3), rgba(0, 0, 0, 0.27));
+        border: 1px solid rgba(236, 68, 80, 0.34);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-warning strong {
+        display: block;
+        margin-bottom: 11px;
+        color: #fff;
+        font-size: clamp(17px, 1.8vw, 21px);
+        font-weight: 610;
+        letter-spacing: -0.038em;
+      }
+
+      .hero-warning span {
+        display: block;
+        color: #d8cec7;
+        font-size: 15.5px;
+        line-height: 1.82;
+        font-weight: 380;
+      }
+
+      .section-head {
+        max-width: 880px;
+        margin: 0 auto 38px;
+      }
+
+      .section-head.compact {
+        margin-top: 48px;
+        margin-bottom: 28px;
+      }
+
+      .section-head h2 {
+        margin-bottom: 18px;
+        color: #fff;
+        font-size: clamp(28px, 3.25vw, 43px);
+        line-height: 1.32;
+        letter-spacing: -0.055em;
+        font-weight: 650;
+      }
+
+      .section-head h2 span {
+        display: block;
+        margin-bottom: 9px;
+        color: var(--gold-soft);
+        font-size: clamp(19px, 2.4vw, 28px);
+        font-weight: 540;
+      }
+
+      .section-head.compact h2 {
+        font-size: clamp(24px, 2.7vw, 34px);
+      }
+
+      .section-head p:not(.eyebrow) {
+        margin-bottom: 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.85;
+        font-weight: 370;
+      }
+
+      .flow-section {
+        width: 100%;
+        max-width: none;
+        padding: 98px max(18px, calc((100vw - var(--max)) / 2)) 92px;
+        border-top: 0 !important;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(207, 168, 108, 0.08), transparent 34%),
+          radial-gradient(circle at 50% 54%, rgba(143, 18, 27, 0.17), transparent 42%),
+          linear-gradient(180deg, rgba(6, 6, 8, 0), rgba(26, 7, 10, 0.47) 42%, rgba(6, 6, 8, 0.12));
+      }
+
+      .flow-alert {
+        max-width: 900px;
+        margin: 0 auto 34px;
+        padding: 22px 24px;
+        border-radius: 24px;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 590;
+        background:
+          linear-gradient(135deg, rgba(143, 18, 27, 0.32), rgba(0, 0, 0, 0.28)),
+          rgba(12, 12, 15, 0.62);
+        border: 1px solid rgba(236, 68, 80, 0.28);
+        box-shadow: var(--shadow);
+      }
+
+      .vertical-flow {
+        max-width: 760px;
+        margin: 0 auto;
+        display: grid;
+        gap: 13px;
+      }
+
+      .flow-card {
+        position: relative;
+        padding: 28px 26px;
+        border-radius: 26px;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(143, 18, 27, 0.11)),
+          rgba(16, 16, 20, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.105);
+        box-shadow: 0 20px 58px rgba(0, 0, 0, 0.24);
+      }
+
+      .flow-card > span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 42px;
+        height: 28px;
+        margin-bottom: 15px;
+        border-radius: 999px;
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 620;
+        background: rgba(207, 168, 108, 0.08);
+        border: 1px solid rgba(207, 168, 108, 0.22);
+      }
+
+      .flow-card h3 {
+        margin-bottom: 9px;
+        color: #fff;
+        font-size: 22px;
+        font-weight: 620;
+        letter-spacing: -0.046em;
+      }
+
+      .flow-card p {
+        max-width: 620px;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.78;
+        font-weight: 370;
+      }
+
+      .down-arrow {
+        color: var(--red2);
+        font-size: 28px;
+        font-weight: 620;
+        line-height: 1;
+        text-shadow: 0 0 20px rgba(185, 34, 44, 0.42);
+      }
+
+      .golden-time-panel {
+        max-width: 880px;
+        margin: 0 auto 28px;
+        padding: 25px 28px;
+        border-radius: 28px;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(207, 168, 108, 0.11), transparent 42%),
+          linear-gradient(135deg, rgba(143, 18, 27, 0.22), rgba(255, 255, 255, 0.045)),
+          rgba(9, 9, 12, 0.72);
+        border: 1px solid rgba(207, 168, 108, 0.18);
+        box-shadow: var(--shadow);
+      }
+
+      .golden-time-panel strong {
+        display: block;
+        color: var(--gold-soft);
+        font-size: clamp(19px, 2.25vw, 26px);
+        font-weight: 620;
+        letter-spacing: -0.047em;
+      }
+
+      .case-marquee-shell {
+        position: relative;
+        width: 100%;
+        max-width: 1100px;
+        margin: 10px auto 0;
+        overflow: hidden;
+        padding: 8px 0 22px;
+        mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+      }
+
+      .case-marquee-track {
+        display: flex;
+        gap: 16px;
+        width: max-content;
+        animation: caseMarquee 34s linear infinite;
+      }
+
+      .case-marquee-shell:hover .case-marquee-track {
+        animation-play-state: paused;
+      }
+
+      .case-card {
+        flex: 0 0 250px;
+        width: 250px;
+        overflow: hidden;
+        border-radius: 20px;
+        background:
+          linear-gradient(180deg, rgba(112, 12, 19, 0.86), rgba(8, 13, 21, 0.96)),
+          rgba(18, 18, 22, 0.88);
+        border: 1px solid rgba(207, 168, 108, 0.2);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+      }
+
+      .case-image {
+        position: relative;
+        aspect-ratio: 3 / 4;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 50% 18%, rgba(207, 168, 108, 0.15), transparent 36%),
+          linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(143, 18, 27, 0.14)),
+          #141419;
+      }
+
+      .case-image::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0;
+        height: 32%;
+        background: linear-gradient(to top, rgba(9, 7, 10, 0.86), transparent);
+        pointer-events: none;
+      }
+
+      .case-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-fallback {
+        position: absolute;
+        color: var(--dim);
+        font-size: 13px;
+        font-weight: 560;
+      }
+
+      .case-image img + .image-fallback {
+        display: none;
+      }
+
+      .case-body {
+        min-height: 166px;
+        padding: 16px 14px 18px;
+        background: linear-gradient(180deg, rgba(45, 7, 11, 0.3), rgba(5, 8, 13, 0.4));
+      }
+
+      .case-body strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 620;
+      }
+
+      .case-body span {
+        display: block;
+        margin-bottom: 9px;
+        color: var(--gold-soft);
+        font-size: 12.8px;
+        font-weight: 560;
+        line-height: 1.48;
+      }
+
+      .case-body p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 12.8px;
+        line-height: 1.62;
+        font-weight: 360;
+      }
+
+      @keyframes caseMarquee {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(calc(-50% - 8px));
+        }
+      }
+
+      .media-block {
+        position: relative;
+        margin-top: 66px;
+        padding: 50px 0 6px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .media-news-panel {
+        position: relative;
+        max-width: 930px;
+        margin: 0 auto;
+        overflow: hidden;
+        padding: 8px;
+        border-radius: 26px;
+        background:
+          radial-gradient(circle at 12% 0%, rgba(207, 168, 108, 0.11), transparent 34%),
+          linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.016)),
+          rgba(10, 10, 13, 0.78);
+        border: 1px solid rgba(207, 168, 108, 0.11);
+        box-shadow: var(--shadow);
+      }
+
+      .media-news-item {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+        padding: 19px 21px 19px 23px;
+        text-align: left;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.016);
+        transition: background 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+      }
+
+      .media-news-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18px;
+        bottom: 18px;
+        width: 3px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--gold), rgba(185, 34, 44, 0.7));
+        opacity: 0.62;
+      }
+
+      .media-news-item + .media-news-item {
+        margin-top: 6px;
+      }
+
+      .media-news-item:hover {
+        background: linear-gradient(90deg, rgba(143, 18, 27, 0.12), rgba(207, 168, 108, 0.04));
+        transform: translateX(3px);
+        box-shadow: inset 0 0 0 1px rgba(207, 168, 108, 0.11);
+      }
+
+      .media-news-meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 7px;
+        color: #cfc6c0;
+        font-size: 12.8px;
+        font-weight: 430;
+        line-height: 1.35;
+      }
+
+      .media-news-meta strong {
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .media-news-meta time {
+        color: var(--dim);
+      }
+
+      .press-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--gold), #fff2c8);
+        box-shadow: 0 0 14px rgba(207, 168, 108, 0.3);
+        flex: 0 0 auto;
+      }
+
+      .media-news-copy h3 {
+        margin: 0 0 6px;
+        color: #f5f2ee;
+        font-size: clamp(16px, 1.48vw, 19.5px);
+        line-height: 1.38;
+        letter-spacing: -0.043em;
+        font-weight: 610;
+      }
+
+      .media-news-copy p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13.5px;
+        line-height: 1.64;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-weight: 360;
+      }
+
+      .media-open-label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-width: 92px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: #f2dfbf;
+        font-size: 12px;
+        font-weight: 580;
+        white-space: nowrap;
+        background: rgba(207, 168, 108, 0.075);
+        border: 1px solid rgba(207, 168, 108, 0.21);
+      }
+
+      .procedure-section {
+        width: 100%;
+        max-width: none;
+        padding-left: max(18px, calc((100vw - var(--max)) / 2));
+        padding-right: max(18px, calc((100vw - var(--max)) / 2));
+        background:
+          radial-gradient(circle at 15% 14%, rgba(207, 168, 108, 0.068), transparent 28%),
+          radial-gradient(circle at 84% 22%, rgba(143, 18, 27, 0.14), transparent 34%),
+          linear-gradient(180deg, rgba(6, 6, 8, 0), rgba(18, 7, 10, 0.32), rgba(6, 6, 8, 0));
+      }
+
+      .procedure-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        width: min(var(--max), 100%);
+        margin: 0 auto;
+      }
+
+      .procedure-card {
+        position: relative;
+        min-height: 226px;
+        padding: 27px 24px;
+        border-radius: 26px;
+        text-align: left;
+        overflow: hidden;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.018)),
+          rgba(16, 16, 20, 0.77);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 58px rgba(0, 0, 0, 0.24);
+      }
+
+      .procedure-card::after {
+        content: "";
+        position: absolute;
+        right: -34px;
+        top: -34px;
+        width: 104px;
+        height: 104px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(207, 168, 108, 0.14), transparent 68%);
+      }
+
+      .procedure-card span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        height: 30px;
+        margin-bottom: 20px;
+        border-radius: 999px;
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 620;
+        background: rgba(207, 168, 108, 0.08);
+        border: 1px solid rgba(207, 168, 108, 0.22);
+      }
+
+      .procedure-card h3 {
+        margin-bottom: 12px;
+        color: #fff;
+        font-size: 21px;
+        font-weight: 620;
+        line-height: 1.36;
+        letter-spacing: -0.048em;
+      }
+
+      .procedure-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.76;
+        font-weight: 360;
+      }
+
+      .legal-panel {
+        padding: 42px;
+        border-radius: 34px;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(207, 168, 108, 0.08), transparent 34%),
+          linear-gradient(145deg, rgba(143, 18, 27, 0.14), rgba(255, 255, 255, 0.04)),
+          rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.075);
+        box-shadow: var(--shadow);
+      }
+
+      .legal-basis-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .legal-basis-card {
+        padding: 25px 23px;
+        border-radius: 24px;
+        text-align: left;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.022)),
+          rgba(15, 15, 19, 0.74);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.21);
+      }
+
+      .legal-basis-card h3 {
+        margin-bottom: 10px;
+        color: #fff;
+        font-size: 21px;
+        font-weight: 620;
+        letter-spacing: -0.045em;
+      }
+
+      .legal-basis-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.76;
+        font-weight: 360;
+      }
+
+      .consult-section {
+        padding-bottom: 110px;
+      }
+
+      .consult-form {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 30px;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(207, 168, 108, 0.075), transparent 36%),
+          linear-gradient(145deg, rgba(143, 18, 27, 0.14), rgba(255, 255, 255, 0.04)),
+          rgba(0, 0, 0, 0.24);
+        border: 1px solid rgba(207, 168, 108, 0.15);
+        box-shadow: var(--shadow);
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .consult-form label {
+        display: grid;
+        gap: 8px;
+        color: #f5f2ee;
+        font-size: 13.5px;
+        font-weight: 520;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        outline: none;
+        border-radius: var(--radius-md);
+        background: rgba(0, 0, 0, 0.27);
+        color: #fff;
+        padding: 15px 14px;
+        font: inherit;
+        font-weight: 400;
+        text-align: center;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input:focus {
+        border-color: rgba(207, 168, 108, 0.42);
+        background: rgba(0, 0, 0, 0.34);
+        box-shadow: 0 0 0 3px rgba(207, 168, 108, 0.055);
+      }
+
+      input::placeholder {
+        color: rgba(255, 255, 255, 0.34);
+      }
+
+      .consult-form button {
+        grid-column: 1 / -1;
+        border: 0;
+        border-radius: var(--radius-md);
+        padding: 18px 20px;
+        background: linear-gradient(135deg, #81111a, #b9222c 54%, #cfa86c 145%);
+        color: #fff;
+        font-size: 17px;
+        font-weight: 620;
+        cursor: pointer;
+        box-shadow: 0 18px 46px rgba(181, 29, 41, 0.22);
+        transition: transform 0.22s ease, filter 0.22s ease;
+      }
+
+      .consult-form button:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+      }
+
+      .form-notice {
+        grid-column: 1 / -1;
+        margin: 0;
+        color: var(--dim);
+        font-size: 12.8px;
+        line-height: 1.72;
+        font-weight: 360;
+      }
+
+
+      .hp-field {
+        position: absolute !important;
+        left: -9999px !important;
+        width: 1px !important;
+        height: 1px !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+
+      .form-status {
+        grid-column: 1 / -1;
+        margin: 0;
+        min-height: 22px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+        font-weight: 430;
+      }
+
+      .form-status[data-type="success"] {
+        color: #e7c895;
+      }
+
+      .form-status[data-type="error"] {
+        color: #ff7a7a;
+      }
+
+      .form-status[data-type="pending"] {
+        color: rgba(245, 240, 235, 0.72);
+      }
+
+      .consult-form button:disabled {
+        cursor: not-allowed;
+        opacity: 0.72;
+        transform: none;
+      }
+
+
+      .compliance-footer {
+        width: 100%;
+        max-width: none;
+        padding: 72px max(18px, calc((100vw - var(--max)) / 2)) 46px;
+        margin-top: -28px;
+        border-top: 1px solid rgba(255, 255, 255, 0.055);
+        background:
+          radial-gradient(circle at 50% 0%, rgba(207, 168, 108, 0.07), transparent 34%),
+          linear-gradient(180deg, rgba(8, 8, 10, 0), rgba(4, 4, 5, 0.72) 34%, rgba(3, 3, 4, 0.96));
+      }
+
+      .footer-inner {
+        width: min(var(--max), 100%);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+        gap: 18px;
+        align-items: stretch;
+      }
+
+      .footer-notice-panel,
+      .business-panel {
+        position: relative;
+        overflow: hidden;
+        border-radius: 28px;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.018)),
+          rgba(11, 11, 14, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.105);
+        box-shadow: 0 20px 58px rgba(0, 0, 0, 0.24);
+        backdrop-filter: blur(16px);
+      }
+
+      .footer-notice-panel::before,
+      .business-panel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 14% 0%, rgba(207, 168, 108, 0.105), transparent 31%),
+          radial-gradient(circle at 100% 16%, rgba(143, 18, 27, 0.115), transparent 34%);
+      }
+
+      .footer-notice-panel {
+        padding: 30px 30px 28px;
+        text-align: left;
+      }
+
+      .footer-kicker {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 18px;
+        color: var(--gold-soft);
+        font-size: 13px;
+        font-weight: 610;
+        letter-spacing: -0.012em;
+      }
+
+      .footer-kicker::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--gold);
+        box-shadow: 0 0 14px rgba(207, 168, 108, 0.34);
+      }
+
+      .footer-notice-copy {
+        position: relative;
+        display: grid;
+        gap: 10px;
+      }
+
+      .footer-notice-copy p {
+        margin: 0;
+        color: rgba(245, 240, 235, 0.72);
+        font-size: 13.5px;
+        line-height: 1.78;
+        font-weight: 350;
+        letter-spacing: -0.025em;
+      }
+
+      .business-panel {
+        padding: 30px;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .business-head {
+        position: relative;
+        padding-bottom: 17px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.085);
+      }
+
+      .business-head strong {
+        display: block;
+        margin-bottom: 6px;
+        color: #fff;
+        font-size: 22px;
+        font-weight: 640;
+        letter-spacing: -0.046em;
+      }
+
+      .business-head span {
+        display: block;
+        color: var(--gold);
+        font-size: 12.8px;
+        font-weight: 470;
+      }
+
+      .business-list {
+        position: relative;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .business-list div {
+        display: grid;
+        grid-template-columns: 118px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .business-list dt,
+      .business-list dd {
+        margin: 0;
+        font-size: 13.2px;
+        line-height: 1.62;
+      }
+
+      .business-list dt {
+        color: rgba(207, 168, 108, 0.82);
+        font-weight: 560;
+        white-space: nowrap;
+      }
+
+      .business-list dd {
+        color: rgba(245, 240, 235, 0.78);
+        font-weight: 370;
+      }
+
+      .policy-links {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .policy-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        color: rgba(245, 240, 235, 0.78);
+        font-size: 12.2px;
+        font-weight: 470;
+        background: rgba(255, 255, 255, 0.048);
+        border: 1px solid rgba(255, 255, 255, 0.085);
+        transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
+      }
+
+      .policy-links a:hover {
+        transform: translateY(-1px);
+        color: #fff;
+        background: rgba(207, 168, 108, 0.1);
+      }
+
+      .footer-small-print {
+        position: relative;
+        margin: 0;
+        color: rgba(187, 176, 170, 0.58);
+        font-size: 12px;
+        line-height: 1.65;
+        font-weight: 340;
+      }
+
+
+
+      /* 최종 정리: 전체 섹션 간격, 카드 호버, 스크롤 페이드인 */
+      .section {
+        scroll-margin-top: 72px;
+      }
+
+      .hero-copy,
+      .section-head,
+      .flow-alert,
+      .golden-time-panel,
+      .vertical-flow,
+      .case-marquee-shell,
+      .media-block,
+      .procedure-grid,
+      .legal-panel,
+      .consult-form,
+      .footer-inner {
+        will-change: transform, opacity;
+      }
+
+      .flow-card,
+      .procedure-card,
+      .legal-basis-card,
+      .case-card,
+      .media-news-item,
+      .footer-notice-panel,
+      .business-panel,
+      .consult-form,
+      .hero-warning,
+      .golden-time-panel,
+      .legal-panel {
+        transition:
+          transform 0.28s ease,
+          border-color 0.28s ease,
+          box-shadow 0.28s ease,
+          background 0.28s ease;
+      }
+
+      .flow-card:hover,
+      .procedure-card:hover,
+      .legal-basis-card:hover,
+      .footer-notice-panel:hover,
+      .business-panel:hover {
+        transform: translateY(-4px);
+        border-color: rgba(207, 168, 108, 0.22);
+        box-shadow: 0 26px 72px rgba(0, 0, 0, 0.3);
+      }
+
+      .consult-form:hover,
+      .legal-panel:hover,
+      .golden-time-panel:hover,
+      .hero-warning:hover {
+        border-color: rgba(207, 168, 108, 0.24);
+        box-shadow: 0 28px 82px rgba(0, 0, 0, 0.42);
+      }
+
+      .fade-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        filter: blur(5px);
+        transition:
+          opacity 0.82s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.82s cubic-bezier(0.16, 1, 0.3, 1),
+          filter 0.82s cubic-bezier(0.16, 1, 0.3, 1);
+        transition-delay: var(--reveal-delay, 0ms);
+      }
+
+      .fade-reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+
+      .fade-reveal.reveal-left {
+        transform: translateX(-28px);
+      }
+
+      .fade-reveal.reveal-right {
+        transform: translateX(28px);
+      }
+
+      .fade-reveal.reveal-left.is-visible,
+      .fade-reveal.reveal-right.is-visible {
+        transform: translateX(0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .fade-reveal,
+        .fade-reveal.reveal-left,
+        .fade-reveal.reveal-right {
+          opacity: 1 !important;
+          transform: none !important;
+          filter: none !important;
+          transition: none !important;
+        }
+
+        .case-marquee-track {
+          animation: none !important;
+        }
+      }
+
+      .bottom-cta {
+        position: fixed;
+        left: 50%;
+        bottom: 16px;
+        z-index: 60;
+        width: min(var(--max), calc(100% - 24px));
+        transform: translateX(-50%);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 14px;
+        border-radius: 22px;
+        background: rgba(11, 11, 14, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        box-shadow: 0 20px 72px rgba(0, 0, 0, 0.46);
+        backdrop-filter: blur(20px);
+      }
+
+      .bottom-cta strong {
+        display: block;
+        font-size: 15.5px;
+        font-weight: 610;
+        letter-spacing: -0.035em;
+      }
+
+      .bottom-cta span {
+        display: block;
+        color: var(--muted);
+        font-size: 12.8px;
+      }
+
+      .bottom-cta nav {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(104px, 1fr));
+        gap: 8px;
+      }
+
+      .bottom-cta a {
+        min-width: 104px;
+        padding: 12px 15px;
+        border-radius: var(--radius-md);
+        text-align: center;
+        font-size: 14px;
+        font-weight: 570;
+        background: rgba(255, 255, 255, 0.075);
+        border: 1px solid var(--line);
+        transition: transform 0.22s ease, background 0.22s ease;
+      }
+
+      .bottom-cta a:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.115);
+      }
+
+      .bottom-cta a:first-child {
+        background: linear-gradient(135deg, #741019, #b9222c);
+        border-color: transparent;
+      }
+
+      .bottom-cta a:nth-child(3) {
+        color: #120707;
+        background: linear-gradient(135deg, #cfa86c, #f1d19b);
+        border-color: transparent;
+      }
+
+      .mobile-only {
+        display: none;
+      }
+
+      @media (max-width: 1020px) {
+        .procedure-grid,
+        .legal-basis-grid {
+          grid-template-columns: 1fr;
+          max-width: 720px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .page-shell {
+          padding-bottom: 142px;
+        }
+
+        .top-alert {
+          font-size: 11.5px;
+          line-height: 1.45;
+        }
+
+        .section {
+          width: min(100% - 28px, var(--max));
+          padding: 64px 0;
+        }
+
+        .flow-section,
+        .procedure-section {
+          width: 100%;
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+
+        .hero {
+          min-height: auto;
+          padding-top: 44px;
+          padding-bottom: 62px;
+        }
+
+        .hero-brand-mark img {
+          max-width: 84vw;
+          height: clamp(82px, 22vw, 118px);
+        }
+
+        .pc-only {
+          display: none;
+        }
+
+        .mobile-only {
+          display: block;
+        }
+
+        h1 {
+          font-size: clamp(30px, 8.2vw, 42px);
+          line-height: 1.22;
+          font-weight: 560;
+          letter-spacing: -0.055em;
+        }
+
+        h1 span {
+          font-size: clamp(20px, 5.3vw, 27px);
+          font-weight: 520;
+        }
+
+        .question-list p {
+          padding: 14px 16px;
+          border-radius: 17px;
+          font-size: 15px;
+          font-weight: 520;
+          line-height: 1.42;
+        }
+
+        .hero-warning,
+        .flow-alert,
+        .golden-time-panel,
+        .legal-panel,
+        .consult-form {
+          padding: 22px 18px;
+          border-radius: 22px;
+        }
+
+        .section-head h2 {
+          max-width: 96vw;
+          margin-left: auto;
+          margin-right: auto;
+          font-size: clamp(23px, 5.9vw, 29px);
+          line-height: 1.26;
+          letter-spacing: -0.05em;
+          font-weight: 560;
+          text-wrap: balance;
+        }
+
+        .flow-section .section-head h2 {
+          max-width: 100%;
+          white-space: nowrap;
+          font-size: clamp(21px, 5.25vw, 25px);
+          letter-spacing: -0.068em;
+        }
+
+        .section-head h2 span {
+          font-size: clamp(18px, 4.8vw, 23px);
+          font-weight: 520;
+        }
+
+        .section-head.compact h2 {
+          font-size: clamp(22px, 5.55vw, 27px);
+          line-height: 1.28;
+          font-weight: 560;
+        }
+
+        .section-head p:not(.eyebrow) {
+          max-width: 92vw;
+          margin-left: auto;
+          margin-right: auto;
+          font-size: 14px;
+          line-height: 1.62;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .eyebrow,
+        .pill-eyebrow {
+          font-size: 12.5px;
+          font-weight: 520;
+        }
+
+        .flow-card,
+        .procedure-card,
+        .legal-basis-card {
+          padding: 22px 18px;
+          border-radius: 21px;
+          text-align: center;
+          min-height: auto;
+        }
+
+        .flow-card h3,
+        .procedure-card h3,
+        .legal-basis-card h3 {
+          font-size: 19px;
+          font-weight: 560;
+          letter-spacing: -0.045em;
+        }
+
+        .flow-card p,
+        .procedure-card p,
+        .legal-basis-card p,
+        .hero-warning span,
+        .flow-alert {
+          font-size: 13.8px;
+          line-height: 1.6;
+        }
+
+        .flow-card p,
+        .procedure-card p,
+        .legal-basis-card p {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .flow-alert {
+          font-weight: 520;
+        }
+
+        .case-marquee-shell {
+          width: calc(100% + 28px);
+          margin-left: -14px;
+        }
+
+        .case-marquee-track {
+          gap: 12px;
+          animation-duration: 26s;
+        }
+
+        .case-card {
+          flex-basis: 184px;
+          width: 184px;
+        }
+
+        .case-body {
+          min-height: 166px;
+          padding: 13px 10px 14px;
+        }
+
+        .case-body strong {
+          font-size: 15.8px;
+        }
+
+        .case-body span,
+        .case-body p {
+          font-size: 11.8px;
+        }
+
+        .media-news-panel {
+          padding: 6px;
+          border-radius: 21px;
+        }
+
+        .media-news-item {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 10px;
+          padding: 16px 15px 16px 18px;
+          border-radius: 16px;
+        }
+
+        .media-news-copy h3 {
+          font-size: 15.5px;
+        }
+
+        .media-news-copy p {
+          font-size: 12.7px;
+          -webkit-line-clamp: 2;
+        }
+
+        .media-open-label {
+          width: fit-content;
+          min-width: 82px;
+          padding: 7px 10px;
+          font-size: 11.8px;
+        }
+
+        .consult-form {
+          grid-template-columns: 1fr;
+        }
+
+        .consult-form label {
+          grid-column: 1 / -1;
+        }
+
+
+        .compliance-footer {
+          padding: 54px 14px 34px;
+          margin-top: -34px;
+        }
+
+        .footer-inner {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .footer-notice-panel,
+        .business-panel {
+          padding: 22px 18px;
+          border-radius: 22px;
+        }
+
+        .footer-notice-copy {
+          gap: 8px;
+        }
+
+        .footer-notice-copy p {
+          font-size: 12.4px;
+          line-height: 1.62;
+          color: rgba(245, 240, 235, 0.68);
+        }
+
+        .business-head strong {
+          font-size: 19px;
+        }
+
+        .business-list {
+          gap: 8px;
+        }
+
+        .business-list div {
+          grid-template-columns: 94px minmax(0, 1fr);
+          gap: 8px;
+        }
+
+        .business-list dt,
+        .business-list dd {
+          font-size: 12.2px;
+          line-height: 1.52;
+        }
+
+        .policy-links a {
+          font-size: 11.7px;
+          min-height: 32px;
+          padding: 6px 10px;
+        }
+
+        .footer-small-print {
+          font-size: 11.5px;
+          line-height: 1.55;
+        }
+
+        .bottom-cta {
+          bottom: 10px;
+          width: calc(100% - 20px);
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 10px;
+          padding: 12px;
+          border-radius: 18px;
+        }
+
+        .bottom-cta nav {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .bottom-cta a {
+          min-width: 0;
+          padding: 11px 10px;
+          font-size: 13px;
+        }
+      }
+      @media (max-width: 390px) {
+        .flow-section .section-head h2 {
+          font-size: 20px;
+          letter-spacing: -0.075em;
+        }
+
+        .section-head h2 {
+          font-size: 22px;
+        }
+      }
+
+    </style>
+
+    <script is:inline>
+      (() => {
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const revealSelectors = [
+          ".hero-copy",
+          ".hero-warning",
+          ".section-head",
+          ".flow-alert",
+          ".flow-card",
+          ".down-arrow",
+          ".golden-time-panel",
+          ".case-marquee-shell",
+          ".media-block",
+          ".media-news-item",
+          ".procedure-card",
+          ".legal-panel",
+          ".legal-basis-card",
+          ".consult-form",
+          ".footer-notice-panel",
+          ".business-panel"
+        ];
+
+        const targets = Array.from(document.querySelectorAll(revealSelectors.join(","))).filter(
+          (element) => !element.closest(".bottom-cta")
+        );
+
+        targets.forEach((element, index) => {
+          element.classList.add("fade-reveal");
+          element.style.setProperty("--reveal-delay", `${Math.min((index % 6) * 65, 325)}ms`);
+
+          if (element.matches(".procedure-card:nth-child(3n+1), .legal-basis-card:nth-child(odd), .footer-notice-panel")) {
+            element.classList.add("reveal-left");
+          }
+
+          if (element.matches(".procedure-card:nth-child(3n), .legal-basis-card:nth-child(even), .business-panel")) {
+            element.classList.add("reveal-right");
+          }
+        });
+
+        if (reduceMotion || !("IntersectionObserver" in window)) {
+          targets.forEach((element) => element.classList.add("is-visible"));
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            });
+          },
+          {
+            threshold: 0.14,
+            rootMargin: "0px 0px -8% 0px",
+          }
+        );
+
+        targets.forEach((element) => observer.observe(element));
+
+        const consultForm = document.querySelector("#consultForm");
+        const consultStatus = document.querySelector("#consultFormStatus");
+
+        if (consultForm) {
+          consultForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const submitButton = consultForm.querySelector('button[type="submit"]');
+            const formData = new FormData(consultForm);
+
+            const payload = {
+              name: String(formData.get("name") || "").trim(),
+              phone: String(formData.get("phone") || "").trim(),
+              company: String(formData.get("company") || "").trim(),
+              amount: String(formData.get("amount") || "").trim(),
+              website: String(formData.get("website") || "").trim(),
+              keyword: consultForm.dataset.keyword || "금융사기",
+              pageUrl: consultForm.dataset.pageUrl || window.location.href,
+              userAgent: navigator.userAgent || "",
+            };
+
+            if (!payload.name || !payload.phone) {
+              if (consultStatus) {
+                consultStatus.textContent = "성함과 연락처를 입력해주세요.";
+                consultStatus.dataset.type = "error";
+              }
+              return;
+            }
+
+            try {
+              if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "접수 중입니다...";
+              }
+
+              if (consultStatus) {
+                consultStatus.textContent = "상담 신청을 접수하고 있습니다.";
+                consultStatus.dataset.type = "pending";
+              }
+
+              const response = await fetch("/api/send-mail", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+              });
+
+              const result = await response.json();
+
+              if (!response.ok || !result.success) {
+                throw new Error(result.error || "상담 신청 접수에 실패했습니다.");
+              }
+
+              consultForm.reset();
+
+              if (consultStatus) {
+                consultStatus.textContent = "상담 신청이 접수되었습니다.";
+                consultStatus.dataset.type = "success";
+              }
+            } catch (error) {
+              if (consultStatus) {
+                consultStatus.textContent = "접수 중 오류가 발생했습니다. 전화 또는 카카오 상담을 이용해주세요.";
+                consultStatus.dataset.type = "error";
+              }
+            } finally {
+              if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = "24시 긴급 상담 신청하기";
+              }
+            }
+          });
+        }
+      })();
+    </script>
+
+  </body>
+</html>

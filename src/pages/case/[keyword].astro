@@ -1,0 +1,51 @@
+---
+import { normalizeKeyword } from "../../config/keywords.js";
+
+export const prerender = false;
+
+/**
+ * /case/키워드로 들어온 값을
+ * 주소창 가림용 토큰 URL로 자동 전환한다.
+ *
+ * 예:
+ * /case/코인-사기
+ * → /d랜덤토큰?n_query=코인-사기
+ */
+
+function createToken(value = "") {
+  const source = `${value}|yb-scam|powerlink|2026`;
+
+  let hash1 = 2166136261;
+  for (let i = 0; i < source.length; i++) {
+    hash1 ^= source.charCodeAt(i);
+    hash1 = Math.imul(hash1, 16777619);
+  }
+
+  let hash2 = 5381;
+  for (let i = 0; i < source.length; i++) {
+    hash2 = Math.imul(hash2, 33) ^ source.charCodeAt(i);
+  }
+
+  let hash3 = 0;
+  for (let i = 0; i < source.length; i++) {
+    hash3 = Math.imul(31, hash3) + source.charCodeAt(i);
+  }
+
+  const part1 = (hash1 >>> 0).toString(36);
+  const part2 = (hash2 >>> 0).toString(36);
+  const part3 = (hash3 >>> 0).toString(36);
+
+  return `d${part1}${part2}${part3}904041121959523775231266133458584`;
+}
+
+const rawKeyword = Astro.params.keyword || "금융사기상담";
+const decodedKeyword = decodeURIComponent(rawKeyword);
+const keyword = normalizeKeyword(decodedKeyword);
+
+const token = createToken(keyword);
+
+return Astro.redirect(
+  `/${token}?n_query=${encodeURIComponent(keyword)}`,
+  302
+);
+---

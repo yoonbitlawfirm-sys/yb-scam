@@ -16,6 +16,67 @@ const normalizeKeyword = (value = "") =>
     .slice(0, 42);
 
 const keyword = normalizeKeyword(rawKeyword);
+
+/**
+ * 금지키워드 비교용 정규화
+ * - 기존 normalizeKeyword 적용
+ * - 영문 대소문자 통일
+ * - 하이픈 제거: G-PAYMENTS / GPAYMENTS 둘 다 차단
+ */
+const normalizeBlockedKeyword = (value = "") =>
+  normalizeKeyword(value)
+    .toLowerCase()
+    .replace(/-/g, "");
+
+/**
+ * 금지키워드 목록
+ * 여기에 들어간 단어가 URL 키워드에 포함되면 렌더링 차단
+ */
+const BLOCKED_KEYWORDS = [
+  "라스북",
+  "LASBOOK",
+  "코베스트",
+  "COVEST",
+  "슈퍼컴퍼니",
+  "슈퍼트레이더",
+  "SUPERTRADER",
+  "HUBIT",
+  "새로인컨설팅",
+  "saeroin",
+  "알토스벤처스",
+  "알토스밴처스",
+  "ALTOSVENTURES",
+  "지페이먼츠",
+  "지페이먼트",
+  "GPAYMENTS",
+  "G-PAYMENTS",
+  "트러스트투자자문",
+  "그랜드벤처스",
+  "그랜드벤쳐스",
+  "GRANDVENTURES",
+  "골든웨일즈",
+  "1초재팬",
+  "AmenA",
+  "에이맨에이"
+];
+
+const normalizedKeywordForBlock = normalizeBlockedKeyword(keyword);
+
+const isBlockedKeyword = BLOCKED_KEYWORDS.some((word) => {
+  const blocked = normalizeBlockedKeyword(word);
+  return blocked && normalizedKeywordForBlock.includes(blocked);
+});
+
+if (isBlockedKeyword) {
+  return new Response("Not Found", {
+    status: 404,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "X-Robots-Tag": "noindex, nofollow"
+    }
+  });
+}
+
 const hasKeyword = keyword.length > 0;
 const displayKeyword = hasKeyword ? keyword : "금융범죄";
 

@@ -94,46 +94,64 @@ const flowSteps = [
   },
 ];
 
-const agreements = [
+const recoveryReviews = [
   {
-    title: "부업 사기",
-    meta: "피해금 980만 원대 · 12시간 내 착수",
-    text: "출금 지연 직후 초기 자료를 확보해 수취 계좌 흐름을 빠르게 확인한 사례",
-    image: "/images/cases/agreement-1.png",
+     type: "부업 사기",
+    recovered: "980만원 전액 회수",
+    total: "피해금 980만 원대",
+    period: "12시간 내 착수",
+    process: ["12시간 내 접수", "즉시 고소장 접수", "가압류 진행", "전액 회수 성공"],
+    quote:
+  "불안해서 잠도 못 자던 상황이었는데, 상담부터 진행까지 너무 친절하고 빠르게 도와주셔서 정말 감사했습니다.",
   },
   {
-    title: "주식 사기",
-    meta: "피해금 2,800만 원대 · 24시간 내 착수",
-    text: "입금 계좌와 대화내역을 기준으로 지급정지 및 법적 대응을 진행한 사례",
-    image: "/images/cases/agreement-2.png",
+    type: "주식 리딩방 사기",
+    recovered: "2,800만원 전액 회수",
+    total: "피해금 2,800만 원대",
+    period: "24시간 내 착수",
+    process: ["24시간 내 접수", "즉시 고소장 접수", "가압류 진행", "전액 회수 성공"],
+    quote:
+  "처음 상담할 때부터 설명이 쉽고 믿음이 갔습니다. 혼자였으면 놓쳤을 부분까지 꼼꼼하게 챙겨주셔서 안심됐습니다.",
   },
   {
-    title: "코인 사기",
-    meta: "피해금 3,200만 원대 · 48시간 내 착수",
-    text: "추가 입금 요구 정황을 확보해 피해 구조를 입증한 사례",
-    image: "/images/cases/agreement-3.png",
+    type: "코인 사기",
+    recovered: "3,200만원 전액 회수",
+    total: "피해금 3,200만 원대",
+    period: "48시간 내 착수",
+    process: ["48시간 내 접수", "즉시 고소장 접수", "가압류 진행", "전액 회수 성공"],
+    quote:
+  "계속 불안했는데 진행 상황을 하나씩 알려주시고 필요한 자료도 정리해주셔서 끝까지 믿고 맡길 수 있었습니다.",
   },
   {
-    title: "로맨스 스캠 사기",
-    meta: "피해금 7,700만 원대 · 3일 내 착수",
-    text: "수취 계좌에서 분산 계좌로 이동한 정황을 확인해 자금 추적 대응을 진행한 사례",
-    image: "/images/cases/agreement-4.png",
+    type: "로맨스 스캠 사기",
+    recovered: "8,000만원 전액 회수",
+    total: "피해금 7,700만 원대",
+    period: "3일 내 착수",
+    process: ["72시간 내 접수", "즉시 고소장 접수", "가압류 진행", "전액 회수 성공"],
+   quote:
+  "사기인지도 확신이 없어서 망설였는데, 상황을 정확히 짚어주시고 바로 대응해주셔서 정말 든든했습니다.",
   },
   {
-    title: "폰지 사기",
-    meta: "피해금 8,400만 원대 · 5일 내 착수",
-    text: "담당자 연락두절 이후 자료를 정리해 계좌 추적 및 보전 조치 가능성을 높인 사례",
-    image: "/images/cases/agreement-5.png",
+    type: "폰지 사기",
+    recovered: "5,970만원 일부 회수",
+    total: "피해금 8,400만 원대",
+    period: "5일 내 착수",
+    process: ["120시간 내 접수", "즉시 고소장 접수", "가압류 진행", "일부 회수 성공"],
+    quote:
+  "연락이 끊기고 너무 무서웠는데, 차분하게 절차를 설명해주시고 끝까지 신경 써주셔서 큰 위로가 됐습니다.",
   },
   {
-    title: "로또 사기",
-    meta: "피해금 2억 2,000만 원대 · 7일 내 단체대응",
-    text: "동일 피해자 자료를 취합해 공동 대응으로 진행한 사례",
-    image: "/images/cases/agreement-6.png",
+    type: "로또 사기",
+    recovered: "1억 1200만원 일부 회수",
+    total: "피해금 2억 2,000만 원대",
+    period: "7일 내 단체대응",
+    process: ["168시간 내 접수", "즉시 고소장 접수", "가압류 진행", "일부 회수 성공"],
+    quote:
+  "여러 피해자가 얽혀 있어 복잡했지만 하나씩 정리해주시고 대응 방향을 잡아주셔서 믿음이 많이 갔습니다.",
   },
 ];
 
-const agreementLoop = [...agreements, ...agreements];
+const recoveryReviewLoop = [...recoveryReviews, ...recoveryReviews];
 
 const mediaReleases = [
   {
@@ -732,30 +750,40 @@ const schemaGraph = {
 
         <section class="section case-section">
           <div class="section-head">
-            <p class="eyebrow">성공 사례 · 골든타임</p>
-            <h2>같은 피해라도, 대응 시점에 따라 결과는 달라질 수 있습니다.</h2>
+            <p class="eyebrow">피해금 회복 후기 · 골든타임</p>
+            <h2>회복 사례는 금액보다, 대응 순서에서 차이가 납니다.</h2>
             <p>
               피해금이 여러 계좌로 분산되기 전 입금 계좌, 거래내역, 대화자료를 확보하고
-              초기 법적 대응에 들어간 사례일수록 자금 흐름을 추적하고 차단하는 데 유리한 대응 구조를 만들 수 있습니다.
+              지급정지·고소장 접수·계좌 동결·보전조치 순서를 빠르게 잡은 사례일수록 회복 가능성을 만들기 유리합니다.
             </p>
           </div>
 
           <div class="golden-time-panel">
-            <strong>핵심은 골든타임 내 정확한 대응입니다.</strong>
+            <strong>핵심은 골든타임 내 증거 보존, 계좌 특정, 법적 조치 연결입니다.</strong>
           </div>
 
-          <div class="case-marquee-shell" aria-label="초기 대응 사례 자동 롤링">
+          <div class="case-marquee-shell recovery-shell" aria-label="피해금 회복 후기 자동 롤링">
             <div class="case-marquee-track">
-              {agreementLoop.map((item, index) => (
-                <article class="case-card" aria-hidden={index >= agreements.length}>
-                  <div class="case-image">
-                    <img src={item.image} alt={`${item.title} 이미지`} loading="lazy" />
-                    <span class="image-fallback">합의서 이미지</span>
+              {recoveryReviewLoop.map((item, index) => (
+                <article class="recovery-card" aria-hidden={index >= recoveryReviews.length}>
+                  <div class="recovery-top">
+                    <span class="recovery-type">{item.type}</span>
+                    <strong>{item.recovered}</strong>
+                    <p>{item.total} · {item.period}</p>
                   </div>
-                  <div class="case-body">
-                    <strong>{item.title}</strong>
-                    <span>{item.meta}</span>
-                    <p>{item.text}</p>
+
+                  <div class="recovery-quote">
+                    <span>피해자 회복 후기</span>
+                    <p>“{item.quote}”</p>
+                  </div>
+
+                  <div class="recovery-process">
+                    <span>실제 진행 절차</span>
+                    <ul>
+                      {item.process.map((step) => (
+                        <li>{step}</li>
+                      ))}
+                    </ul>
                   </div>
                 </article>
               ))}
@@ -1224,6 +1252,7 @@ const schemaGraph = {
       .procedure-card,
       .legal-basis-card,
       .media-news-panel,
+      .recovery-card,
       .faq-card {
         backdrop-filter: blur(16px);
       }
@@ -1501,6 +1530,255 @@ const schemaGraph = {
         font-size: 12.8px;
         line-height: 1.62;
         font-weight: 360;
+      }
+
+
+      .recovery-shell {
+        max-width: 1120px;
+        padding-top: 10px;
+      }
+
+      .recovery-card {
+        position: relative;
+        flex: 0 0 330px;
+        width: 330px;
+        min-height: 430px;
+        overflow: hidden;
+        padding: 24px 22px;
+        border-radius: 24px;
+        text-align: left;
+        background:
+          radial-gradient(circle at 18% 0%, rgba(207, 168, 108, 0.16), transparent 34%),
+          radial-gradient(circle at 100% 12%, rgba(185, 34, 44, 0.16), transparent 36%),
+          linear-gradient(180deg, rgba(112, 12, 19, 0.58), rgba(8, 10, 16, 0.96)),
+          rgba(18, 18, 22, 0.9);
+        border: 1px solid rgba(207, 168, 108, 0.22);
+        box-shadow: 0 22px 58px rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(16px);
+      }
+
+      .recovery-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 22px;
+        bottom: 22px;
+        width: 3px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--gold), rgba(185, 34, 44, 0.82));
+        opacity: 0.78;
+      }
+
+      .recovery-card::after {
+        content: "RECOVERY CASE";
+        position: absolute;
+        right: -18px;
+        top: 26px;
+        color: rgba(255, 255, 255, 0.045);
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        transform: rotate(90deg);
+        transform-origin: right top;
+        pointer-events: none;
+      }
+
+      .recovery-top {
+        position: relative;
+        z-index: 1;
+        padding-bottom: 18px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+      }
+
+      .recovery-type {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 28px;
+        padding: 6px 11px;
+        margin-bottom: 14px;
+        border-radius: 999px;
+        color: var(--gold-soft);
+        font-size: 12px;
+        font-weight: 620;
+        background: rgba(207, 168, 108, 0.09);
+        border: 1px solid rgba(207, 168, 108, 0.22);
+      }
+
+      .recovery-top strong {
+        display: block;
+        margin-bottom: 8px;
+        color: #fff;
+        font-size: 27px;
+        line-height: 1.18;
+        font-weight: 720;
+        letter-spacing: -0.055em;
+      }
+
+      .recovery-top p {
+        margin: 0;
+        color: var(--gold-soft);
+        font-size: 13.5px;
+        line-height: 1.55;
+        font-weight: 560;
+      }
+
+      .recovery-quote {
+        position: relative;
+        z-index: 1;
+        margin-bottom: 18px;
+        padding: 18px 17px;
+        border-radius: 18px;
+        background: rgba(0, 0, 0, 0.24);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .recovery-quote span,
+      .recovery-process span {
+        display: block;
+        margin-bottom: 9px;
+        color: rgba(207, 168, 108, 0.9);
+        font-size: 12px;
+        font-weight: 640;
+      }
+
+      .recovery-quote p {
+        margin: 0;
+        color: rgba(245, 240, 235, 0.76);
+        font-size: 13.5px;
+        line-height: 1.72;
+        font-weight: 360;
+      }
+
+      .recovery-process {
+        position: relative;
+        z-index: 1;
+      }
+
+      .recovery-process ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .recovery-process li {
+        position: relative;
+        padding-left: 15px;
+        color: rgba(245, 240, 235, 0.68);
+        font-size: 13px;
+        line-height: 1.48;
+        font-weight: 390;
+      }
+
+      .recovery-process li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 5px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--gold);
+        box-shadow: 0 0 12px rgba(207, 168, 108, 0.34);
+      }
+
+      .recovery-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(207, 168, 108, 0.34);
+        box-shadow: 0 28px 72px rgba(0, 0, 0, 0.38);
+      }
+
+
+      .testimonial-card {
+        position: relative;
+        min-height: 430px;
+        padding: 24px 20px 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(207, 168, 108, 0.12), transparent 34%),
+          linear-gradient(180deg, rgba(112, 12, 19, 0.78), rgba(8, 13, 21, 0.96)),
+          rgba(18, 18, 22, 0.88);
+      }
+
+      .testimonial-card::before {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(207, 168, 108, 0.11);
+        pointer-events: none;
+      }
+
+      .testimonial-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 26px;
+      }
+
+      .testimonial-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        color: var(--gold-soft);
+        font-size: 12px;
+        font-weight: 610;
+        background: rgba(207, 168, 108, 0.08);
+        border: 1px solid rgba(207, 168, 108, 0.2);
+      }
+
+      .testimonial-mark {
+        color: rgba(207, 168, 108, 0.24);
+        font-size: 74px;
+        line-height: 0.8;
+        font-family: Georgia, serif;
+      }
+
+      .testimonial-card .case-body {
+        position: relative;
+        z-index: 1;
+        min-height: auto;
+        padding: 0;
+        background: transparent;
+      }
+
+      .testimonial-card .case-body strong {
+        font-size: 18px;
+        line-height: 1.38;
+      }
+
+      .testimonial-card .case-body span {
+        color: var(--gold-soft);
+        font-size: 12.5px;
+      }
+
+      .testimonial-card .case-body p {
+        margin-top: 18px;
+        color: rgba(245, 240, 235, 0.78);
+        font-size: 13.2px;
+        line-height: 1.72;
+      }
+
+      .testimonial-card .case-body em {
+        display: inline-flex;
+        margin-top: 20px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 11.8px;
+        font-style: normal;
+        font-weight: 560;
+        background: rgba(143, 18, 27, 0.26);
+        border: 1px solid rgba(236, 68, 80, 0.18);
       }
 
       @keyframes caseMarquee {
@@ -2128,6 +2406,7 @@ const schemaGraph = {
       .hero-warning,
       .golden-time-panel,
       .legal-panel,
+      .recovery-card,
       .faq-card {
         transition:
           transform 0.28s ease,
@@ -2139,6 +2418,7 @@ const schemaGraph = {
       .flow-card:hover,
       .procedure-card:hover,
       .legal-basis-card:hover,
+      .recovery-card:hover,
       .faq-card:hover,
       .footer-notice-panel:hover,
       .business-panel:hover {
@@ -2465,6 +2745,78 @@ const schemaGraph = {
           font-size: 11.8px;
         }
 
+        .testimonial-card {
+          min-height: 360px;
+          padding: 20px 14px 18px;
+        }
+
+        .testimonial-card .case-body strong {
+          font-size: 15.8px;
+        }
+
+        .testimonial-card .case-body p {
+          font-size: 12.2px;
+          line-height: 1.64;
+        }
+
+        .testimonial-mark {
+          font-size: 58px;
+        }
+
+        .testimonial-badge {
+          font-size: 11.2px;
+          min-height: 28px;
+          padding: 6px 9px;
+        }
+
+        .testimonial-card .case-body em {
+          font-size: 11px;
+          line-height: 1.4;
+          white-space: normal;
+        }
+
+
+
+
+        .recovery-card {
+          flex-basis: 278px;
+          width: 278px;
+          min-height: 404px;
+          padding: 21px 18px;
+          border-radius: 22px;
+        }
+
+        .recovery-card::after {
+          font-size: 25px;
+          right: -13px;
+          top: 24px;
+        }
+
+        .recovery-top strong {
+          font-size: 23px;
+        }
+
+        .recovery-top p {
+          font-size: 12.6px;
+        }
+
+        .recovery-quote {
+          padding: 15px 14px;
+        }
+
+        .recovery-quote p {
+          font-size: 12.7px;
+          line-height: 1.62;
+          display: -webkit-box;
+          -webkit-line-clamp: 4;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .recovery-process li {
+          font-size: 12.3px;
+        }
+
         .media-news-panel {
           padding: 6px;
           border-radius: 21px;
@@ -2641,6 +2993,7 @@ const schemaGraph = {
           ".legal-panel",
           ".legal-basis-card",
           ".consult-form",
+          ".recovery-card",
           ".faq-card",
           ".footer-notice-panel",
           ".business-panel"

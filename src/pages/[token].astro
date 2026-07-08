@@ -282,32 +282,24 @@ const metaKeywords = [
 
 const faqItems = [
   {
-    question: hasKeyword
-      ? `${displayKeyword} 사칭 사기는 어떤 경우 의심해야 하나요?`
-      : "금융사기 또는 사칭 피해는 어떤 경우 의심해야 하나요?",
-    answer: hasKeyword
-      ? `${displayKeyword} 명칭을 사용한 사이트나 담당자가 출금 지연, 추가 입금, 세금·보증금·수수료 납부를 요구하거나 연락이 두절되는 경우 사칭 사기 가능성을 확인해야 합니다.`
-      : "출금 지연, 추가 입금 요구, 담당자 연락두절, 계좌 변경, 사이트 폐쇄 등의 정황이 있다면 금융사기 또는 사칭 피해 가능성을 확인해야 합니다.",
+    question: `${displayKeyword} 사칭 사기는 어떤 경우 의심해야 하나요?`,
+    answer: `${displayKeyword} 명칭을 사용한 사이트·앱·담당자가 출금 지연, 추가 입금, 세금·보증금·수수료 납부를 요구하거나 연락이 두절되는 경우 사칭 사기 가능성을 확인해야 합니다.`,
   },
   {
-    question: "정상기업과 사칭 사기는 어떻게 구분하나요?",
-    answer:
-      "정상기업 자체가 아니라 제3자가 정상기업의 명칭, 로고, 홈페이지, 담당자명 등을 무단 도용해 피해자를 유인하는 경우가 있습니다. 입금 계좌, 대화 내용, 접속 경로, 출금 지연 사유를 종합적으로 확인해야 합니다.",
+    question: `${displayKeyword} 출금 지연이나 출금거부가 반복되면 어떻게 해야 하나요?`,
+    answer: `${displayKeyword} 관련 출금 지연이 반복되고 담당자가 전산 오류, 세금, 인증, 보증금 등의 사유를 계속 바꾼다면 단순 지연이 아닐 수 있습니다. 입금내역, 출금 신청 화면, 담당자 대화자료를 먼저 보존해야 합니다.`,
   },
   {
-    question: "출금이 지연될 때 바로 대응해야 하나요?",
-    answer:
-      "출금 지연과 함께 추가 입금 요구, 세금 납부 요구, 보증금 요구, 담당자 변경이 반복된다면 초기 대응이 중요합니다. 시간이 지날수록 자금 이동과 증거 삭제 가능성이 높아질 수 있습니다.",
+    question: `${displayKeyword} 추가 입금 요구를 받았다면 바로 송금해도 되나요?`,
+    answer: `${displayKeyword} 명목으로 세금, 보증금, 수수료, 인증비, 해제비 등을 요구받았다면 추가 송금 전 피해 가능성을 확인해야 합니다. 추가 입금은 피해 규모를 키우고 자금 추적을 더 어렵게 만들 수 있습니다.`,
   },
   {
-    question: "법무법인 윤빛은 유선상으로 비용을 먼저 요구하나요?",
-    answer:
-      "법무법인 윤빛은 유선상으로 비용을 먼저 요구하지 않으며, 전화 상담만으로 구체적인 대응 절차를 전부 공개하지 않습니다. 피해 정황과 대응 가능성을 우선 확인한 뒤 필요 시 내방 상담을 통해 안내합니다.",
+    question: `${displayKeyword} 피해금 계좌 추적과 대포통장 대응은 언제부터 해야 하나요?`,
+    answer: `${displayKeyword} 피해금은 수취 계좌에서 분산 계좌, 인출 계좌, 가상자산 지갑 등으로 빠르게 이동할 수 있습니다. 입금 직후 자료를 확보하고 지급정지, 계좌 동결, 고소, 보전조치 가능성을 함께 검토하는 것이 중요합니다.`,
   },
   {
-    question: "상담 전에 어떤 자료를 준비해야 하나요?",
-    answer:
-      "입금내역, 계좌번호, 거래내역, 담당자와의 대화자료, 사이트 주소, 앱 화면, 출금 지연 안내문, 추가 입금 요구 내역을 준비하면 피해 구조와 대응 가능성 검토에 도움이 됩니다.",
+    question: `${displayKeyword} 피해 상담 전에 어떤 자료를 준비해야 하나요?`,
+    answer: `${displayKeyword} 피해 상담 전에는 입금내역, 계좌번호, 거래내역, 사이트 주소, 앱 화면, 담당자 연락처, 카카오톡·텔레그램 대화, 출금 지연 안내문, 추가 입금 요구 메시지를 정리해두는 것이 좋습니다.`,
   },
 ];
 
@@ -884,6 +876,30 @@ const schemaGraph = {
             <p class="form-status" id="consultFormStatus" aria-live="polite"></p>
           </form>
         </section>
+
+        <section class="section faq-section" id="faq">
+          <div class="section-head">
+            <p class="eyebrow">자주 묻는 질문 · 피해 초기 확인</p>
+            <h2>
+              <span>{displayKeyword} 사칭 사기</span>
+              상담 전 가장 많이 확인하는 질문입니다
+            </h2>
+            <p>
+              출금 지연, 추가 입금 요구, 계좌 변경, 연락두절 정황은 서로 연결되어 나타나는 경우가 많습니다.
+              아래 항목을 기준으로 현재 상황을 먼저 정리해보세요.
+            </p>
+          </div>
+
+          <div class="faq-grid" aria-label={`${displayKeyword} 사칭 사기 자주 묻는 질문`}>
+            {faqItems.map((item, index) => (
+              <article class="faq-card">
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+              </article>
+            ))}
+          </div>
+        </section>
       </main>
 
       <footer class="compliance-footer" aria-label="법무법인 윤빛 고지 및 사업자 정보">
@@ -1207,7 +1223,8 @@ const schemaGraph = {
       .case-card,
       .procedure-card,
       .legal-basis-card,
-      .media-news-panel {
+      .media-news-panel,
+      .faq-card {
         backdrop-filter: blur(16px);
       }
 
@@ -1738,6 +1755,76 @@ const schemaGraph = {
         font-weight: 360;
       }
 
+      .faq-section {
+        padding-top: 88px;
+        padding-bottom: 118px;
+      }
+
+      .faq-grid {
+        max-width: 960px;
+        margin: 0 auto;
+        display: grid;
+        gap: 14px;
+      }
+
+      .faq-card {
+        position: relative;
+        overflow: hidden;
+        padding: 26px 26px 25px;
+        border-radius: 24px;
+        text-align: left;
+        background:
+          radial-gradient(circle at 0% 0%, rgba(207, 168, 108, 0.08), transparent 30%),
+          linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(143, 18, 27, 0.06)),
+          rgba(15, 15, 19, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+      }
+
+      .faq-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 22px;
+        bottom: 22px;
+        width: 3px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--gold), rgba(185, 34, 44, 0.78));
+        opacity: 0.72;
+      }
+
+      .faq-card > span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 42px;
+        height: 28px;
+        margin-bottom: 14px;
+        border-radius: 999px;
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 620;
+        background: rgba(207, 168, 108, 0.08);
+        border: 1px solid rgba(207, 168, 108, 0.22);
+      }
+
+      .faq-card h3 {
+        margin: 0 0 10px;
+        color: #fff;
+        font-size: 19px;
+        line-height: 1.42;
+        font-weight: 620;
+        letter-spacing: -0.045em;
+      }
+
+      .faq-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14.5px;
+        line-height: 1.76;
+        font-weight: 360;
+      }
+
       .consult-section {
         padding-bottom: 110px;
       }
@@ -2040,7 +2127,8 @@ const schemaGraph = {
       .consult-form,
       .hero-warning,
       .golden-time-panel,
-      .legal-panel {
+      .legal-panel,
+      .faq-card {
         transition:
           transform 0.28s ease,
           border-color 0.28s ease,
@@ -2051,6 +2139,7 @@ const schemaGraph = {
       .flow-card:hover,
       .procedure-card:hover,
       .legal-basis-card:hover,
+      .faq-card:hover,
       .footer-notice-panel:hover,
       .business-panel:hover {
         transform: translateY(-4px);
@@ -2413,6 +2502,47 @@ const schemaGraph = {
         }
 
 
+        .faq-section {
+          padding-top: 64px;
+          padding-bottom: 86px;
+        }
+
+        .faq-grid {
+          gap: 11px;
+        }
+
+        .faq-card {
+          padding: 21px 18px;
+          border-radius: 20px;
+          text-align: center;
+        }
+
+        .faq-card::before {
+          top: 18px;
+          bottom: 18px;
+        }
+
+        .faq-card > span {
+          min-width: 38px;
+          height: 26px;
+          margin-bottom: 12px;
+          font-size: 11.5px;
+        }
+
+        .faq-card h3 {
+          font-size: 16.5px;
+          line-height: 1.42;
+        }
+
+        .faq-card p {
+          font-size: 13.5px;
+          line-height: 1.62;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
         .compliance-footer {
           padding: 54px 14px 34px;
           margin-top: -34px;
@@ -2493,7 +2623,7 @@ const schemaGraph = {
 
     </style>
 
-    <script is:inline>
+    <script>
       (() => {
         const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const revealSelectors = [
@@ -2511,6 +2641,7 @@ const schemaGraph = {
           ".legal-panel",
           ".legal-basis-card",
           ".consult-form",
+          ".faq-card",
           ".footer-notice-panel",
           ".business-panel"
         ];
@@ -2568,7 +2699,7 @@ const schemaGraph = {
               company: String(formData.get("company") || "").trim(),
               amount: String(formData.get("amount") || "").trim(),
               website: String(formData.get("website") || "").trim(),
-              keyword: consultForm.dataset.keyword || "금융사기",
+              keyword: consultForm.dataset.keyword || "금융범죄",
               pageUrl: consultForm.dataset.pageUrl || window.location.href,
               userAgent: navigator.userAgent || "",
             };
@@ -2627,6 +2758,15 @@ const schemaGraph = {
         }
       })();
     </script>
+
+    <!-- Smartlog -->
+    <script is:inline type="text/javascript">
+      var hpt_info = { "_account": "UHPT-300504", "_server": "a300" };
+    </script>
+    <script is:inline type="text/javascript" src="//cdn.smlog.co.kr/core/smart_renew.js" charset="utf-8"></script>
+    <noscript>
+      <img src="//a300.smlog.co.kr/smart_bda.php?_account=300504" style="display:none;width:0;height:0;" border="0" alt="" />
+    </noscript>
 
   </body>
 </html>

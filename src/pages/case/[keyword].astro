@@ -3,15 +3,6 @@ import { normalizeKeyword } from "../../config/keywords.js";
 
 export const prerender = false;
 
-/**
- * /case/키워드로 들어온 값을
- * 주소창 가림용 토큰 URL로 자동 전환한다.
- *
- * 예:
- * /case/코인-사기
- * → /d랜덤토큰?n_query=코인-사기
- */
-
 function createToken(value = "") {
   const source = `${value}|yb-scam|powerlink|2026`;
 
@@ -38,7 +29,7 @@ function createToken(value = "") {
   return `d${part1}${part2}${part3}904041121959523775231266133458584`;
 }
 
-const rawKeyword = Astro.params.keyword || "금융사기상담";
+const rawKeyword = Astro.params.keyword || "금융범죄";
 const decodedKeyword = decodeURIComponent(rawKeyword);
 const keyword = normalizeKeyword(decodedKeyword);
 

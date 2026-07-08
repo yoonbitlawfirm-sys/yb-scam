@@ -11,7 +11,7 @@ const normalizeKeyword = (value = "") =>
     .replace(/\+/g, " ")
     .replace(/[<>]/g, "")
     .replace(/["'`{}]/g, "")
-    .replace(/\s+/g, " ")
+    .replace(/\s+/g, "")
     .trim()
     .slice(0, 42);
 
@@ -619,7 +619,7 @@ const schemaGraph = {
     <meta name="keywords" content={metaKeywords} />
     <meta name="author" content={BRAND.name} />
     <meta name="publisher" content={BRAND.name} />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="robots" content="noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="format-detection" content="telephone=yes" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="alternate" hreflang="ko-KR" href={canonicalUrl} />
@@ -1951,28 +1951,6 @@ const schemaGraph = {
         gap: 20px;
       }
 
-      .business-head {
-        position: relative;
-        padding-bottom: 17px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.085);
-      }
-
-      .business-head strong {
-        display: block;
-        margin-bottom: 6px;
-        color: #fff;
-        font-size: 22px;
-        font-weight: 640;
-        letter-spacing: -0.046em;
-      }
-
-      .business-head span {
-        display: block;
-        color: var(--gold);
-        font-size: 12.8px;
-        font-weight: 470;
-      }
-
       .business-list {
         position: relative;
         margin: 0;
@@ -2032,17 +2010,6 @@ const schemaGraph = {
         color: #fff;
         background: rgba(207, 168, 108, 0.1);
       }
-
-      .footer-small-print {
-        position: relative;
-        margin: 0;
-        color: rgba(187, 176, 170, 0.58);
-        font-size: 12px;
-        line-height: 1.65;
-        font-weight: 340;
-      }
-
-
 
       /* 최종 정리: 전체 섹션 간격, 카드 호버, 스크롤 페이드인 */
       .section {
@@ -2472,10 +2439,6 @@ const schemaGraph = {
           color: rgba(245, 240, 235, 0.68);
         }
 
-        .business-head strong {
-          font-size: 19px;
-        }
-
         .business-list {
           gap: 8px;
         }
@@ -2495,11 +2458,6 @@ const schemaGraph = {
           font-size: 11.7px;
           min-height: 32px;
           padding: 6px 10px;
-        }
-
-        .footer-small-print {
-          font-size: 11.5px;
-          line-height: 1.55;
         }
 
         .bottom-cta {
@@ -2576,24 +2534,23 @@ const schemaGraph = {
 
         if (reduceMotion || !("IntersectionObserver" in window)) {
           targets.forEach((element) => element.classList.add("is-visible"));
-          return;
+        } else {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              });
+            },
+            {
+              threshold: 0.14,
+              rootMargin: "0px 0px -8% 0px",
+            }
+          );
+
+          targets.forEach((element) => observer.observe(element));
         }
-
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (!entry.isIntersecting) return;
-              entry.target.classList.add("is-visible");
-              observer.unobserve(entry.target);
-            });
-          },
-          {
-            threshold: 0.14,
-            rootMargin: "0px 0px -8% 0px",
-          }
-        );
-
-        targets.forEach((element) => observer.observe(element));
 
         const consultForm = document.querySelector("#consultForm");
         const consultStatus = document.querySelector("#consultFormStatus");

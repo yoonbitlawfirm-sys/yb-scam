@@ -18,9 +18,10 @@ export async function POST({ request, clientAddress }) {
 
     const name = String(body.name || "").trim();
     const phone = String(body.phone || "").trim();
+    const cleanPhone = phone.replace(/[^\d]/g, "");
     const company = String(body.company || "").trim();
     const amount = String(body.amount || "").trim();
-    const keyword = String(body.keyword || "금융사기").trim();
+    const keyword = String(body.keyword || "금융범죄").trim();
     const pageUrl = String(body.pageUrl || "").trim();
     const userAgent = String(body.userAgent || "").trim();
     const honeypot = String(body.website || "").trim();
@@ -40,6 +41,19 @@ export async function POST({ request, clientAddress }) {
         JSON.stringify({
           success: false,
           error: "이름과 연락처는 필수입니다.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (cleanPhone.length < 9 || cleanPhone.length > 12) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "연락처 형식이 올바르지 않습니다.",
         }),
         {
           status: 400,
@@ -80,6 +94,10 @@ export async function POST({ request, clientAddress }) {
             <tr>
               <th style="text-align:left;background:#f7f7f7;padding:10px;border:1px solid #ddd;">연락처</th>
               <td style="padding:10px;border:1px solid #ddd;">${escapeHtml(phone)}</td>
+            </tr>
+            <tr>
+              <th style="text-align:left;background:#f7f7f7;padding:10px;border:1px solid #ddd;">숫자 연락처</th>
+              <td style="padding:10px;border:1px solid #ddd;">${escapeHtml(cleanPhone)}</td>
             </tr>
             <tr>
               <th style="text-align:left;background:#f7f7f7;padding:10px;border:1px solid #ddd;">피해 업체명</th>

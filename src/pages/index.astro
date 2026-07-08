@@ -7,8 +7,8 @@ export const prerender = false;
  * / 로 접속했을 때도
  * /case/키워드와 같은 랜딩 디자인으로 보내기 위한 기본 입구
  *
- * / 
- * → /d토큰?n_query=금융사기상담
+ * /
+ * → /d토큰?n_query=금융범죄
  */
 
 function createToken(value = "") {
@@ -37,7 +37,7 @@ function createToken(value = "") {
   return `d${part1}${part2}${part3}904041121959523775231266133458584`;
 }
 
-const keyword = normalizeKeyword("금융사기상담");
+const keyword = normalizeKeyword("금융범죄");
 const token = createToken(keyword);
 
 return Astro.redirect(

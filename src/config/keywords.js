@@ -2,9 +2,9 @@ export const SITE = {
   name: "법무법인 윤빛",
   brand: "윤빛 금융사기 공동대응센터",
   domain: "www.yb-scam.com",
-  phone: "010-2290-4252",
-  tel: "01022904252",
-  kakao: "https://open.kakao.com/o/sd4HGIti",
+  phone: "010-7673-3544",
+  tel: "01076733544",
+  kakao: "https://open.kakao.com/o/s5chdzLi",
   email: "contact@yoonbitlawfirm.com"
 };
 
